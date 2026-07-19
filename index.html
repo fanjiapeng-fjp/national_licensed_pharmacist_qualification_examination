@@ -98,6 +98,9 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="auth-card">
 <div class="auth-title" id="authTitle">登录</div>
 <div class="auth-subtitle" id="authSubtitle">使用邮箱登录，数据云端同步</div>
+
+<!-- Normal auth form -->
+<div id="authNormal">
 <input class="auth-input" type="email" id="authEmail" placeholder="邮箱地址" autocomplete="email">
 <input class="auth-input" type="password" id="authPassword" placeholder="密码" autocomplete="current-password">
 <input class="auth-input" type="password" id="authPassword2" placeholder="确认密码" style="display:none" autocomplete="new-password">
@@ -109,7 +112,42 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="auth-error" id="authError"></div>
 <div class="auth-success" id="authSuccess"></div>
 <button class="btn btn-primary btn-block" id="authBtn" onclick="doAuth()">登 录</button>
-<div class="auth-toggle"><span id="authToggleText">没有账号？<span onclick="toggleAuthMode()">立即注册</span></span></div>
+<div class="auth-toggle" id="authToggleText" style="margin-bottom:4px">没有账号？<span onclick="toggleAuthMode()">立即注册</span></div>
+<div class="auth-toggle" style="margin-bottom:4px;cursor:pointer" onclick="showForgotPassword()"><span>忘记密码？</span></div>
+<div class="auth-toggle" id="authMoreLogin" style="display:block">
+  <span onclick="toggleMoreLogin()" style="color:#888;text-decoration:none">更多登录方式 ▸</span>
+  <div id="authMoreLoginList" style="display:none;margin-top:8px">
+    <span onclick="showOtpLogin()" style="color:var(--accent);cursor:pointer;text-decoration:underline">邮箱验证码登录</span>
+  </div>
+</div>
+</div>
+
+<!-- OTP login form -->
+<div id="authOtp" style="display:none">
+<input class="auth-input" type="email" id="authOtpEmail" placeholder="邮箱地址" autocomplete="email">
+<div id="authOtpCodeRow" style="display:none">
+  <input class="auth-input" type="text" id="authOtpCode" placeholder="6位验证码" maxlength="6" autocomplete="one-time-code" inputmode="numeric">
+</div>
+<div class="auth-error" id="authOtpError"></div>
+<div class="auth-success" id="authOtpSuccess"></div>
+<button class="btn btn-primary btn-block" id="authOtpBtn" onclick="doOtpLogin()">发送验证码</button>
+<div class="auth-toggle"><span onclick="backToNormalAuth()" style="cursor:pointer;text-decoration:underline">← 返回密码登录</span></div>
+</div>
+
+<!-- Forgot password form -->
+<div id="authForgot" style="display:none">
+<div class="auth-subtitle" style="font-size:var(--font-sm)">输入邮箱，我们将发送重置密码链接</div>
+<input class="auth-input" type="email" id="authForgotEmail" placeholder="邮箱地址" autocomplete="email">
+<div id="authForgotNewPwd" style="display:none">
+  <input class="auth-input" type="password" id="authForgotPassword" placeholder="新密码（至少6位）" autocomplete="new-password">
+  <input class="auth-input" type="password" id="authForgotPassword2" placeholder="确认新密码">
+</div>
+<div class="auth-error" id="authForgotError"></div>
+<div class="auth-success" id="authForgotSuccess"></div>
+<button class="btn btn-primary btn-block" id="authForgotBtn" onclick="doForgotPassword()">发送重置邮件</button>
+<div class="auth-toggle"><span onclick="backToNormalAuth()" style="cursor:pointer;text-decoration:underline">← 返回登录</span></div>
+</div>
+
 </div></div></div>
 
 <div class="page" id="page-home" style="display:none">
@@ -225,8 +263,52 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="card" id="memoryCards"><div class="bold mb-8">速记卡片</div><div id="memoryCardList"></div></div>
 </div>
 
+<div class="page" id="page-otp-reset">
+<div class="auth-page" style="justify-content:center">
+<div class="auth-card">
+<div class="auth-title">重设密码</div>
+<div class="auth-subtitle">请输入新密码</div>
+<input class="auth-input" type="password" id="otpResetPassword" placeholder="新密码（至少6位）" autocomplete="new-password">
+<input class="auth-input" type="password" id="otpResetPassword2" placeholder="确认新密码">
+<div class="auth-error" id="otpResetError"></div>
+<div class="auth-success" id="otpResetSuccess"></div>
+<button class="btn btn-primary btn-block" onclick="doResetPassword()">设置新密码</button>
+<div class="auth-toggle"><span onclick="location.reload()" style="cursor:pointer;text-decoration:underline">← 返回登录</span></div>
+</div></div></div>
+
+<div class="page" id="page-profile">
+<div class="page-header"><div class="page-back" onclick="switchTab(6)">‹ 返回</div>个人主页</div>
+<div style="padding:20px;max-width:500px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:24px">
+    <div style="width:80px;height:80px;border-radius:50%;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:32px;font-weight:700" id="profileAvatar">?</div>
+  </div>
+  <label style="font-size:var(--font-sm);color:#888;margin-bottom:4px;display:block">用户名</label>
+  <input class="auth-input" type="text" id="profileUsername" disabled style="background:#f5f5f5">
+  <label style="font-size:var(--font-sm);color:#888;margin-bottom:4px;display:block">姓名</label>
+  <input class="auth-input" type="text" id="profileName" placeholder="请输入姓名">
+  <label style="font-size:var(--font-sm);color:#888;margin-bottom:4px;display:block">性别</label>
+  <select class="auth-input" id="profileGender">
+    <option value="">请选择</option>
+    <option value="男">男</option>
+    <option value="女">女</option>
+    <option value="其他">其他</option>
+  </select>
+  <label style="font-size:var(--font-sm);color:#888;margin-bottom:4px;display:block">生日</label>
+  <input class="auth-input" type="date" id="profileBirthday">
+  <label style="font-size:var(--font-sm);color:#888;margin-bottom:4px;display:block">手机号</label>
+  <input class="auth-input" type="tel" id="profilePhone" placeholder="请输入手机号">
+  <label style="font-size:var(--font-sm);color:#888;margin-bottom:4px;display:block">个人简介</label>
+  <textarea class="auth-input" id="profileBio" placeholder="一句话介绍自己" style="height:80px;resize:vertical"></textarea>
+  <div class="auth-error" id="profileError"></div>
+  <div class="auth-success" id="profileSuccess"></div>
+  <button class="btn btn-primary btn-block" onclick="saveProfile()" style="margin:12px 0">保存资料</button>
+  <button class="btn btn-block" onclick="logout()" style="background:#f5f5f5;color:#333;border:1px solid var(--border);margin-bottom:12px">退出登录</button>
+  <button class="btn btn-block" onclick="deleteAccount()" style="background:#fff;color:var(--red);border:1px solid var(--red)">删除账号</button>
+</div>
+</div>
+
 <div class="page" id="page-settings">
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="bold fs-lg" id="settingsUsername">当前用户</div><div class="fs-sm" style="color:#888">学习数据自动保存</div></div><button class="btn btn-outline btn-sm" onclick="logout()">退出登录</button></div></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="bold fs-lg" id="settingsUsername" onclick="navTo('page-profile')" style="cursor:pointer">当前用户 ›</div><div class="fs-sm" style="color:#888">学习数据自动保存</div></div><button class="btn btn-outline btn-sm" onclick="navTo('page-profile')" style="margin-right:6px">编辑资料</button><button class="btn btn-outline btn-sm" onclick="logout()">退出登录</button></div></div>
 <div class="card"><div class="bold mb-8">学习数据总览</div>
 <div class="stat-grid">
 <div class="stat-item"><div class="stat-value" id="sTotal">0</div><div class="stat-label">总刷题</div></div>
@@ -424,7 +506,7 @@ function updateCountdown() {
   document.getElementById("countdown").textContent = diff > 0 ? diff + "天" : "考试日！";
 }
 
-var pages = ["page-home","page-study","page-wrong","page-exam","page-report","page-search","page-settings","page-quiz","page-exam-running","page-exam-result"];
+var pages = ["page-home","page-study","page-wrong","page-exam","page-report","page-search","page-settings","page-profile","page-otp-reset","page-quiz","page-exam-running","page-exam-result"];
 var currentTab = 0;
 var currentSubject = 1;
 
@@ -440,6 +522,165 @@ function switchTab(idx) {
   if(idx===4) renderReport();
   if(idx===5) renderSearch();
   if(idx===6) renderSettings();
+}
+// Navigate to any page by ID (for sub-pages not in bottom nav)
+function navTo(pageId) {
+  pages.forEach(function(p){ document.getElementById(p).classList.remove("active"); });
+  document.getElementById(pageId).classList.add("active");
+  if(pageId === "page-profile") showProfile();
+  if(pageId === "page-otp-reset") showOtpReset();
+}
+
+
+// Navigate to any page by ID (for sub-pages not in bottom nav)// ===== OTP PASSWORD RESET =====
+function showOtpReset() {
+  document.getElementById("page-auth").style.display = "none";
+  navTo("page-otp-reset");
+}
+
+async function doResetPassword() {
+  var pwd = document.getElementById("otpResetPassword").value;
+  var pwd2 = document.getElementById("otpResetPassword2").value;
+  var errEl = document.getElementById("otpResetError");
+  var sucEl = document.getElementById("otpResetSuccess");
+  errEl.textContent = "";
+  sucEl.textContent = "";
+
+  if (!pwd || pwd.length < 6) { errEl.textContent = "新密码至少6个字符"; return; }
+  if (pwd !== pwd2) { errEl.textContent = "两次密码不一致"; return; }
+
+  try {
+    var session = JSON.parse(localStorage.getItem("yspx_supabase_session") || "{}");
+    var token = session.access_token;
+    if (!token) { errEl.textContent = "会话已过期，请返回重新发送重置邮件"; return; }
+
+    var res = await fetch(SUPABASE_URL + "/auth/v1/user", {
+      method: "PUT",
+      headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pwd })
+    });
+    if (res.ok) {
+      sucEl.textContent = "密码已重置！正在跳转...";
+      setTimeout(function() {
+        localStorage.clear();
+        location.reload();
+      }, 1500);
+    } else {
+      var d = await res.json();
+      errEl.textContent = d.msg || "重置失败，请重新发送重置邮件";
+    }
+  } catch(e) {
+    errEl.textContent = "网络错误";
+  }
+}
+
+// ===== PROFILE =====
+function showProfile() {
+  var uid = localStorage.getItem("yspx_current_user");
+  if (!uid) return;
+  supabase.from("profiles").select("*").eq("id", uid).maybeSingle().then(function(r) {
+    if (r.data) {
+      document.getElementById("profileUsername").value = r.data.username || "";
+      document.getElementById("profileName").value = r.data.name || "";
+      document.getElementById("profileGender").value = r.data.gender || "";
+      document.getElementById("profileBirthday").value = r.data.birthday || "";
+      document.getElementById("profilePhone").value = r.data.phone || "";
+      document.getElementById("profileBio").value = r.data.bio || "";
+      var initial = (r.data.name || r.data.username || "?").charAt(0);
+      document.getElementById("profileAvatar").textContent = initial;
+    }
+  });
+  document.getElementById("profileError").textContent = "";
+  document.getElementById("profileSuccess").textContent = "";
+}
+
+async function saveProfile() {
+  var uid = localStorage.getItem("yspx_current_user");
+  if (!uid) return;
+  var errEl = document.getElementById("profileError");
+  var sucEl = document.getElementById("profileSuccess");
+  errEl.textContent = "";
+  sucEl.textContent = "";
+
+  var name = document.getElementById("profileName").value.trim();
+  var gender = document.getElementById("profileGender").value;
+  var birthday = document.getElementById("profileBirthday").value;
+  var phone = document.getElementById("profilePhone").value.trim();
+  var bio = document.getElementById("profileBio").value.trim();
+
+  try {
+    var session = JSON.parse(localStorage.getItem("yspx_supabase_session") || "{}");
+    var res = await fetch(SUPABASE_URL + "/rest/v1/profiles?id=eq." + uid, {
+      method: "PATCH",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + (session.access_token || ""),
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({ name: name, gender: gender, birthday: birthday, phone: phone, bio: bio })
+    });
+    if (res.ok) {
+      sucEl.textContent = "保存成功！";
+      setTimeout(function() { sucEl.textContent = ""; }, 2000);
+    } else {
+      errEl.textContent = "保存失败，请重试";
+    }
+  } catch(e) {
+    errEl.textContent = "网络错误";
+  }
+}
+
+async function deleteAccount() {
+  if (!confirm("确定要删除账号吗？\n\n此操作不可撤销！\n- 所有学习数据将被清除\n- 云端账号将被删除\n\n确定继续？")) return;
+  if (!confirm("再次确认：真的要永久删除账号吗？")) return;
+
+  try {
+    var session = JSON.parse(localStorage.getItem("yspx_supabase_session") || "{}");
+    if (session.access_token) {
+      await fetch(SUPABASE_URL + "/auth/v1/user", {
+        method: "DELETE",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token }
+      });
+    }
+  } catch(e) {}
+
+  var keys = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k && k.indexOf("yspx_") === 0) keys.push(k);
+  }
+  keys.forEach(function(k) { localStorage.removeItem(k); });
+  location.reload();
+}
+
+async function logout() {
+  if (confirm("确定要退出登录吗？")) {
+    try {
+      var session = JSON.parse(localStorage.getItem("yspx_supabase_session") || "{}");
+      if (session.access_token) {
+        await fetch(SUPABASE_URL + "/auth/v1/logout", {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + session.access_token }
+        });
+      }
+    } catch(e) {}
+    localStorage.removeItem("yspx_current_user");
+    localStorage.removeItem("yspx_auto_login");
+    localStorage.removeItem("yspx_supabase_session");
+    location.reload();
+  }
+}
+
+
+// Show app (hide auth, show main UI)
+function showApp() {
+  document.getElementById("page-auth").style.display = "none";
+  document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = ""; });
+  document.getElementById("page-home").classList.add("active");
+  document.getElementById("page-home").style.display = "";
+  document.querySelectorAll(".nav-item")[0].classList.add("active");
+  initApp();
 }
 
 // ===== HOME =====
@@ -1000,25 +1241,66 @@ function exportData() {
 
 
 // ===== AUTH SYSTEM (Supabase) =====
+var authMode = "login"; // "login" or "register"
+var otpStep = "send"; // "send" or "verify"
 
-function getAuthMode() { return document.getElementById("authPassword2").style.display==="block" ? "register" : "login"; }
+function getAuthMode() { return authMode; }
 
 function toggleAuthMode() {
-  var isLogin = getAuthMode() === "login";
-  document.getElementById("authTitle").textContent = isLogin ? "注册" : "登录";
-  document.getElementById("authSubtitle").textContent = isLogin ? "邮箱注册，验证后设置密码" : "使用邮箱登录，数据云端同步";
-  document.getElementById("authPassword2").style.display = isLogin ? "block" : "none";
-  document.getElementById("authUsername").style.display = isLogin ? "block" : "none";
-  document.getElementById("authUsername").placeholder = isLogin ? "用户名（2-20个字符）" : "";
-  document.getElementById("authCheckboxRow").style.display = isLogin ? "none" : "flex";
-  document.getElementById("authBtn").textContent = isLogin ? "注 册" : "登 录";
-  document.getElementById("authToggleText").innerHTML = isLogin ? '已有账号？<span onclick="toggleAuthMode()">立即登录</span>' : '没有账号？<span onclick="toggleAuthMode()">立即注册</span>';
+  authMode = authMode === "login" ? "register" : "login";
+  var isReg = authMode === "register";
+  document.getElementById("authTitle").textContent = isReg ? "注册" : "登录";
+  document.getElementById("authSubtitle").textContent = isReg ? "邮箱注册，验证后设置密码" : "使用邮箱登录，数据云端同步";
+  document.getElementById("authPassword2").style.display = isReg ? "block" : "none";
+  document.getElementById("authUsername").style.display = isReg ? "block" : "none";
+  document.getElementById("authCheckboxRow").style.display = isReg ? "none" : "flex";
+  document.getElementById("authBtn").textContent = isReg ? "注 册" : "登 录";
+  document.getElementById("authToggleText").innerHTML = isReg ? '已有账号？<span onclick="toggleAuthMode()">立即登录</span>' : '没有账号？<span onclick="toggleAuthMode()">立即注册</span>';
+  document.getElementById("authMoreLogin").style.display = isReg ? "none" : "block";
   document.getElementById("authError").textContent = "";
   document.getElementById("authSuccess").textContent = "";
   document.getElementById("authEmail").value = "";
   document.getElementById("authPassword").value = "";
   document.getElementById("authPassword2").value = "";
   document.getElementById("authUsername").value = "";
+  document.getElementById("authMoreLoginList").style.display = "none";
+}
+
+function showForgotPassword() {
+  document.getElementById("authNormal").style.display = "none";
+  document.getElementById("authOtp").style.display = "none";
+  document.getElementById("authForgot").style.display = "block";
+  document.getElementById("authForgotEmail").value = document.getElementById("authEmail").value;
+  document.getElementById("authForgotError").textContent = "";
+  document.getElementById("authForgotSuccess").textContent = "";
+  document.getElementById("authForgotNewPwd").style.display = "none";
+  document.getElementById("authForgotBtn").textContent = "发送重置邮件";
+}
+
+function showOtpLogin() {
+  document.getElementById("authNormal").style.display = "none";
+  document.getElementById("authOtp").style.display = "block";
+  document.getElementById("authForgot").style.display = "none";
+  document.getElementById("authOtpEmail").value = document.getElementById("authEmail").value;
+  document.getElementById("authOtpError").textContent = "";
+  document.getElementById("authOtpSuccess").textContent = "";
+  document.getElementById("authOtpCodeRow").style.display = "none";
+  document.getElementById("authOtpBtn").textContent = "发送验证码";
+  otpStep = "send";
+}
+
+function backToNormalAuth() {
+  document.getElementById("authNormal").style.display = "block";
+  document.getElementById("authOtp").style.display = "none";
+  document.getElementById("authForgot").style.display = "none";
+  document.getElementById("authError").textContent = "";
+  document.getElementById("authSuccess").textContent = "";
+  document.getElementById("authMoreLoginList").style.display = "none";
+}
+
+function toggleMoreLogin() {
+  var list = document.getElementById("authMoreLoginList");
+  list.style.display = list.style.display === "none" ? "block" : "none";
 }
 
 function setLoading(loading) {
@@ -1028,14 +1310,13 @@ function setLoading(loading) {
     btn.innerHTML = '<span class="auth-loading"></span>处理中...';
   } else {
     btn.disabled = false;
-    btn.textContent = getAuthMode() === "register" ? "注 册" : "登 录";
+    btn.textContent = authMode === "register" ? "注 册" : "登 录";
   }
 }
 
 async function doAuth() {
   var email = document.getElementById("authEmail").value.trim();
   var password = document.getElementById("authPassword").value;
-  var mode = getAuthMode();
   var errEl = document.getElementById("authError");
   var sucEl = document.getElementById("authSuccess");
   errEl.textContent = "";
@@ -1048,14 +1329,13 @@ async function doAuth() {
   setLoading(true);
 
   try {
-    if (mode === "register") {
+    if (authMode === "register") {
       var password2 = document.getElementById("authPassword2").value;
       if (password !== password2) { errEl.textContent = "两次密码不一致"; setLoading(false); return; }
       var username = document.getElementById("authUsername").value.trim();
       if (!username) { errEl.textContent = "请设置用户名"; setLoading(false); return; }
       if (username.length < 2 || username.length > 20) { errEl.textContent = "用户名需2-20个字符"; setLoading(false); return; }
 
-      // Check username uniqueness
       var { data: existing } = await supabase.from("profiles").select("username").eq("username", username).maybeSingle();
       if (existing) { errEl.textContent = "该用户名已被占用"; setLoading(false); return; }
 
@@ -1066,11 +1346,7 @@ async function doAuth() {
       });
 
       if (error) {
-        if (error.message.includes("already registered") || error.message.includes("already exists")) {
-          errEl.textContent = "该邮箱已注册，请直接登录";
-        } else {
-          errEl.textContent = error.message;
-        }
+        errEl.textContent = error.message;
         setLoading(false);
         return;
       }
@@ -1081,15 +1357,11 @@ async function doAuth() {
       document.getElementById("authPassword").value = "";
 
     } else {
-      // Login
       var remember = document.getElementById("authRemember").checked;
       var autoLogin = document.getElementById("authAutoLogin").checked;
 
-      // If user explicitly asks to remember, store credentials locally
       if (remember) {
         localStorage.setItem("yspx_remembered_email", email);
-        // Never store raw password; use a simple obfuscation (NOT secure, but better than plaintext)
-        // In production, use credential management API
       } else {
         localStorage.removeItem("yspx_remembered_email");
       }
@@ -1100,20 +1372,13 @@ async function doAuth() {
       });
 
       if (error) {
-        if (error.message.includes("Email not confirmed")) {
-          errEl.textContent = "邮箱尚未验证，请先点击验证邮件中的链接";
-        } else if (error.message.includes("Invalid login")) {
-          errEl.textContent = "邮箱或密码错误";
-        } else {
-          errEl.textContent = error.message;
-        }
+        errEl.textContent = error.message;
         setLoading(false);
         return;
       }
 
       if (data.user) {
         localStorage.setItem("yspx_current_user", data.user.id);
-        // Store auto-login preference
         if (autoLogin) {
           localStorage.setItem("yspx_auto_login", "1");
         } else {
@@ -1130,25 +1395,139 @@ async function doAuth() {
   setLoading(false);
 }
 
-async function logout() {
-  if (confirm("确定要退出登录吗？（学习数据仍保留在云端）")) {
-    await supabase.auth.signOut();
-    localStorage.removeItem("yspx_current_user");
-    localStorage.removeItem("yspx_auto_login");
-    location.reload();
+// ===== OTP Login =====
+async function doOtpLogin() {
+  var email = document.getElementById("authOtpEmail").value.trim();
+  var errEl = document.getElementById("authOtpError");
+  var sucEl = document.getElementById("authOtpSuccess");
+  errEl.textContent = "";
+  sucEl.textContent = "";
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = "请输入有效的邮箱地址"; btn.disabled = false; btn.textContent = "发送验证码"; return; }
+
+  var btn = document.getElementById("authOtpBtn");
+  btn.disabled = true;
+
+  try {
+    if (otpStep === "send") {
+      btn.innerHTML = '<span class="auth-loading"></span>发送中...';
+      var res = await fetch(SUPABASE_URL + "/auth/v1/otp", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, create_user: false })
+      });
+      if (!res.ok) {
+        var data = await res.json();
+        errEl.textContent = data.msg || data.message || "发送失败";
+        btn.disabled = false;
+        btn.textContent = "发送验证码";
+        return;
+      }
+      sucEl.textContent = "验证码已发送到 " + email + "，请查收邮件";
+      document.getElementById("authOtpCodeRow").style.display = "block";
+      document.getElementById("authOtpEmail").disabled = true;
+      btn.textContent = "验证并登录";
+      otpStep = "verify";
+      btn.disabled = false;
+    } else {
+      var code = document.getElementById("authOtpCode").value.trim();
+      if (!code || code.length !== 6) { errEl.textContent = "请输入6位验证码"; btn.disabled = false; return; }
+      btn.innerHTML = '<span class="auth-loading"></span>验证中...';
+
+      var res = await fetch(SUPABASE_URL + "/auth/v1/verify", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, token: code, type: "email" })
+      });
+      var data = await res.json();
+      if (!res.ok) {
+        errEl.textContent = data.msg || data.message || "验证码错误或已过期";
+        btn.disabled = false;
+        btn.textContent = "验证并登录";
+        return;
+      }
+
+      // Save session
+      localStorage.setItem("yspx_supabase_session", JSON.stringify(data));
+      localStorage.setItem("yspx_current_user", data.user.id);
+      localStorage.setItem("yspx_auto_login", "1");
+      showApp();
+    }
+  } catch(e) {
+    errEl.textContent = "网络错误，请检查网络连接后重试";
+    btn.disabled = false;
+    btn.textContent = otpStep === "send" ? "发送验证码" : "验证并登录";
   }
 }
 
-function showApp() {
-  document.getElementById("page-auth").style.display = "none";
-  document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = ""; });
-  document.getElementById("page-home").classList.add("active");
-  document.getElementById("page-home").style.display = "";
-  document.querySelectorAll(".nav-item")[0].classList.add("active");
-  initApp();
+// ===== Forgot Password =====
+async function doForgotPassword() {
+  var email = document.getElementById("authForgotEmail").value.trim();
+  var errEl = document.getElementById("authForgotError");
+  var sucEl = document.getElementById("authForgotSuccess");
+  errEl.textContent = "";
+  sucEl.textContent = "";
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = "请输入有效的邮箱地址"; return; }
+
+  var btn = document.getElementById("authForgotBtn");
+  btn.disabled = true;
+
+  // Check if we're in "set new password" mode (after clicking reset link)
+  var newPwdDiv = document.getElementById("authForgotNewPwd");
+  if (newPwdDiv.style.display === "block") {
+    var pwd = document.getElementById("authForgotPassword").value;
+    var pwd2 = document.getElementById("authForgotPassword2").value;
+    if (!pwd || pwd.length < 6) { errEl.textContent = "新密码至少6个字符"; btn.disabled = false; return; }
+    if (pwd !== pwd2) { errEl.textContent = "两次密码不一致"; btn.disabled = false; return; }
+
+    btn.innerHTML = '<span class="auth-loading"></span>更新中...';
+    try {
+      var session = supabase.auth._getSession();
+      var res = await fetch(SUPABASE_URL + "/auth/v1/user", {
+        method: "PUT",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + (session ? session.access_token : ""), "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pwd })
+      });
+      if (res.ok) {
+        sucEl.textContent = "密码已重置！请返回登录";
+        newPwdDiv.style.display = "none";
+        btn.textContent = "已完成";
+      } else {
+        var d = await res.json();
+        errEl.textContent = d.msg || "重置失败，请重新发送重置邮件";
+      }
+    } catch(e) {
+      errEl.textContent = "网络错误";
+    }
+    btn.disabled = false;
+    return;
+  }
+
+  btn.innerHTML = '<span class="auth-loading"></span>发送中...';
+  try {
+    var res = await fetch(SUPABASE_URL + "/auth/v1/recover", {
+      method: "POST",
+      headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    });
+    if (!res.ok) {
+      var data = await res.json();
+      errEl.textContent = data.msg || data.message || "发送失败";
+      btn.disabled = false;
+      btn.textContent = "发送重置邮件";
+      return;
+    }
+    sucEl.textContent = "重置邮件已发送到 " + email + "，请查收邮件并点击链接设置新密码";
+    btn.textContent = "已发送";
+  } catch(e) {
+    errEl.textContent = "网络错误，请检查网络连接后重试";
+    btn.disabled = false;
+    btn.textContent = "发送重置邮件";
+  }
 }
 
-// ===== Handle Supabase auth callback (email verification, password reset etc) =====
+// ===== Profile =====asyncasyncasync// ===== Handle Supabase auth callback (email verification, password reset etc) =====
 async function handleAuthCallback() {
   var hash = location.hash;
   if (!hash || !hash.includes("access_token=")) return false;
@@ -1178,7 +1557,31 @@ async function handleAuthCallback() {
 
     // Clean URL
     history.replaceState(null, "", location.pathname);
-    return true;
+    
+    // If this was a password recovery callback, show new password form
+    var type = params.get("type");
+    if (type === "recovery") {
+      document.getElementById("page-auth").style.display = "flex";
+      document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = "none"; });
+      document.getElementById("authNormal").style.display = "none";
+      document.getElementById("authOtp").style.display = "none";
+      document.getElementById("authForgot").style.display = "block";
+      document.getElementById("authForgotNewPwd").style.display = "block";
+      document.getElementById("authForgotBtn").textContent = "设置新密码";
+      document.getElementById("authForgotEmail").value = user.email || "";
+      document.getElementById("authForgotEmail").disabled = true;
+      document.getElementById("authForgotError").textContent = "";
+      document.getElementById("authForgotSuccess").textContent = "请设置您的新密码";
+    }
+    
+      // Redirect to password reset page for recovery flow
+      var _params = new URLSearchParams(location.hash.substring(1));
+      var _type = _params.get("type");
+      if (_type === "recovery") {
+        setTimeout(function() { navTo("page-otp-reset"); }, 100);
+        return true;
+      }
+return true;
   } catch (e) {
     console.error("Auth callback error:", e);
     return false;
