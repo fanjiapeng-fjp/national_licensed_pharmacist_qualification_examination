@@ -68,13 +68,40 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 .justify-between{justify-content:space-between}.gap-8{gap:8px}.gap-12{gap:12px}
 .flex-1{flex:1}.text-center{text-align:center}.w-full{width:100%}
 @media(max-width:480px){.stat-grid{gap:8px}.card{margin:8px 12px;padding:12px}}
+
+/* Auth Page */
+.auth-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:20px}
+.auth-card{background:var(--card);border-radius:var(--radius);padding:32px 24px;width:100%;max-width:400px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.auth-title{font-size:var(--font-xl);font-weight:700;color:var(--accent);text-align:center;margin-bottom:8px}
+.auth-subtitle{font-size:var(--font-sm);color:#888;text-align:center;margin-bottom:24px}
+.auth-input{width:100%;padding:14px 16px;border-radius:8px;border:2px solid var(--border);font-size:var(--font-md);margin-bottom:12px;outline:none;background:#FFF}
+.auth-input:focus{border-color:var(--accent)}
+.auth-toggle{text-align:center;margin-top:16px;font-size:var(--font-sm);color:#888}
+.auth-toggle span{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline}
+.auth-error{color:var(--red);font-size:var(--font-sm);text-align:center;margin-top:8px;min-height:20px}
+.user-badge{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:var(--font-sm)}
+.user-badge:hover{opacity:.8}
 </style>
 </head>
 <body>
 <div class="header" id="headerTitle">国家执业药师职业资格考试（2026）</div>
 <div class="toast" id="toast"></div>
 
-<div class="page active" id="page-home">
+
+<div class="page active" id="page-auth" style="display:flex">
+<div class="auth-page">
+<div class="auth-card">
+<div class="auth-title" id="authTitle">登录</div>
+<div class="auth-subtitle" id="authSubtitle">登录后数据将保存在您的账号下</div>
+<input class="auth-input" type="text" id="authUsername" placeholder="用户名" autocomplete="username">
+<input class="auth-input" type="password" id="authPassword" placeholder="密码" autocomplete="current-password">
+<input class="auth-input" type="password" id="authPassword2" placeholder="确认密码" style="display:none" autocomplete="new-password">
+<div class="auth-error" id="authError"></div>
+<button class="btn btn-primary btn-block" id="authBtn" onclick="doAuth()">登 录</button>
+<div class="auth-toggle"><span id="authToggleText">没有账号？<span onclick="toggleAuthMode()">立即注册</span></span></div>
+</div></div></div>
+
+<div class="page" id="page-home" style="display:none">
 <div class="card"><div class="flex justify-between items-center mb-16"><div><span class="fs-sm" style="color:#888">距离考试</span></div><div class="countdown" id="countdown">加载中...</div></div>
 <div class="stat-grid">
 <div class="stat-item"><div class="stat-value" id="todayCount">0</div><div class="stat-label">今日已做题</div></div>
@@ -188,6 +215,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 </div>
 
 <div class="page" id="page-settings">
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="bold fs-lg" id="settingsUsername">当前用户</div><div class="fs-sm" style="color:#888">学习数据自动保存</div></div><button class="btn btn-outline btn-sm" onclick="logout()">退出登录</button></div></div>
 <div class="card"><div class="bold mb-8">学习数据总览</div>
 <div class="stat-grid">
 <div class="stat-item"><div class="stat-value" id="sTotal">0</div><div class="stat-label">总刷题</div></div>
@@ -231,10 +259,12 @@ var QUESTIONS = [{"id": 1, "subject": 1, "chapter": "第1章 药物化学基础"
 var SUBJECTS = [{"id": 1, "name": "药一", "full": "药学专业知识（一）", "icon": "🧪"}, {"id": 2, "name": "药二", "full": "药学专业知识（二）", "icon": "💊"}, {"id": 3, "name": "药综", "full": "药学综合知识与技能", "icon": "📋"}, {"id": 4, "name": "法规", "full": "药事管理与法规", "icon": "⚖️"}];
 var CHAPTERS = {"1": ["第1章 药物化学基础", "第2章 药物制剂", "第3章 药物分析", "第4章 生物药剂学"], "2": ["第1章 神经系统药物", "第2章 心血管系统药物", "第3章 内分泌系统药物", "第4章 抗感染药物"], "3": ["第1章 药物治疗管理", "第2章 处方审核与调配", "第3章 用药教育与指导", "第4章 特殊人群用药"], "4": ["第1章 药品管理法", "第2章 药品注册管理", "第3章 GSP/GMP", "第4章 特殊管理药品"]};
 
-var STORAGE_KEY = "yspx_data_v2";
+var STORAGE_BASE = "yspx_data_v2";
+function getStorageKey() { var user = localStorage.getItem("yspx_current_user"); return user ? STORAGE_BASE + "_" + user : STORAGE_BASE; }
+function getStorageKeyFor(user) { return STORAGE_BASE + "_" + user; }
 
 function loadData() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || getDefaultData(); }
+  try { return JSON.parse(localStorage.getItem(getStorageKey())) || getDefaultData(); }
   catch(e) { return getDefaultData(); }
 }
 
@@ -252,7 +282,7 @@ function getDefaultData() {
   };
 }
 
-function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function saveData(data) { localStorage.setItem(getStorageKey(), JSON.stringify(data)); }
 var appData = loadData();
 
 function toast(msg) {
@@ -804,7 +834,7 @@ function renderSettings() {
   document.getElementById("studyPhase").value = appData.settings.phase||"basic";
   document.getElementById("sceneMode").value = appData.settings.scene||"normal";
   document.getElementById("fontSize").value = appData.settings.fontSize||22;
-  var size = new Blob([localStorage.getItem(STORAGE_KEY)||""]).size;
+  var size = new Blob([localStorage.getItem(getStorageKey())||""]).size;
   document.getElementById("cacheSize").textContent = "当前占用："+(size/1024).toFixed(1)+"KB";
 }
 
@@ -843,19 +873,118 @@ function exportData() {
   URL.revokeObjectURL(url); toast("数据已导出");
 }
 
+
+// ===== AUTH SYSTEM =====
+var AUTH_USERS_KEY = "yspx_users";
+
+async function hashPassword(password, username) {
+  var encoder = new TextEncoder();
+  var data = encoder.encode(password + "::yspx::" + username);
+  var hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  var hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
+}
+
+function getAuthMode() { return document.getElementById("authPassword2").style.display==="block" ? "register" : "login"; }
+
+function toggleAuthMode() {
+  var isLogin = getAuthMode() === "login";
+  document.getElementById("authTitle").textContent = isLogin ? "注册" : "登录";
+  document.getElementById("authSubtitle").textContent = isLogin ? "创建账号，开始学习之旅" : "登录后数据将保存在您的账号下";
+  document.getElementById("authPassword2").style.display = isLogin ? "block" : "none";
+  document.getElementById("authBtn").textContent = isLogin ? "注 册" : "登 录";
+  document.getElementById("authToggleText").innerHTML = isLogin ? '已有账号？<span onclick="toggleAuthMode()">立即登录</span>' : '没有账号？<span onclick="toggleAuthMode()">立即注册</span>';
+  document.getElementById("authError").textContent = "";
+  document.getElementById("authUsername").value = "";
+  document.getElementById("authPassword").value = "";
+  document.getElementById("authPassword2").value = "";
+}
+
+async function doAuth() {
+  var username = document.getElementById("authUsername").value.trim();
+  var password = document.getElementById("authPassword").value;
+  var mode = getAuthMode();
+  var errEl = document.getElementById("authError");
+  errEl.textContent = "";
+
+  if (!username || !password) { errEl.textContent = "请填写用户名和密码"; return; }
+  if (username.length < 2) { errEl.textContent = "用户名至少2个字符"; return; }
+  if (password.length < 4) { errEl.textContent = "密码至少4个字符"; return; }
+
+  if (mode === "register") {
+    var password2 = document.getElementById("authPassword2").value;
+    if (password !== password2) { errEl.textContent = "两次密码不一致"; return; }
+
+    var users = {};
+    try { users = JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {}; } catch(e) {}
+    if (users[username]) { errEl.textContent = "该用户名已被注册"; return; }
+
+    var hashed = await hashPassword(password, username);
+    users[username] = hashed;
+    localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+    localStorage.setItem("yspx_current_user", username);
+    showApp();
+  } else {
+    var users = {};
+    try { users = JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {}; } catch(e) {}
+    var hashed = await hashPassword(password, username);
+    if (!users[username] || users[username] !== hashed) { errEl.textContent = "用户名或密码错误"; return; }
+
+    localStorage.setItem("yspx_current_user", username);
+    showApp();
+  }
+}
+
+function logout() {
+  if (confirm("确定要退出登录吗？")) {
+    localStorage.removeItem("yspx_current_user");
+    location.reload();
+  }
+}
+
+function showApp() {
+  document.getElementById("page-auth").style.display = "none";
+  document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = ""; });
+  document.getElementById("page-home").classList.add("active");
+  document.getElementById("page-home").style.display = "";
+  document.querySelectorAll(".nav-item")[0].classList.add("active");
+  initApp();
+}
+
+function checkAuth() {
+  var user = localStorage.getItem("yspx_current_user");
+  if (user) {
+    document.getElementById("page-auth").style.display = "none";
+    document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = ""; });
+    document.getElementById("page-home").classList.add("active");
+    document.getElementById("page-home").style.display = "";
+    document.querySelectorAll(".nav-item")[0].classList.add("active");
+    initApp();
+  } else {
+    document.getElementById("page-auth").style.display = "flex";
+    document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = "none"; });
+  }
+}
+
+
 // ===== INIT =====
-updateCountdown();
-setInterval(updateCountdown, 60000);
-renderHome();
+checkAuth();
+
+function initApp() {
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+  renderHome();
+
+  var fs = appData.settings.fontSize||22;
+  document.documentElement.style.setProperty("--font-md",fs+"px");
+  document.documentElement.style.setProperty("--font-lg",(fs+4)+"px");
+  document.documentElement.style.setProperty("--font-xl",(fs+10)+"px");
+}
 
 if("serviceWorker" in navigator) {
   navigator.serviceWorker.register("data:application/javascript," + encodeURIComponent("var C='yspx-v2';self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(['.'])}));self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}));self.clients.claim()});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(resp){var cl=resp.clone();caches.open(C).then(function(c){return c.put(e.request,cl)});return resp})}))});"));
 }
 
-var fs = appData.settings.fontSize||22;
-document.documentElement.style.setProperty("--font-md",fs+"px");
-document.documentElement.style.setProperty("--font-lg",(fs+4)+"px");
-document.documentElement.style.setProperty("--font-xl",(fs+10)+"px");
 </script>
 </body>
 </html>
