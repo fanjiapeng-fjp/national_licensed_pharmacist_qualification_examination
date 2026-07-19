@@ -101,7 +101,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 
 <!-- Normal auth form -->
 <div id="authNormal">
-<input class="auth-input" type="email" id="authEmail" placeholder="邮箱地址" autocomplete="email" onblur="checkEmailExists()">
+<input class="auth-input" type="email" id="authEmail" placeholder="邮箱地址" autocomplete="email" oninput="checkEmailExists()">
 <div class="auth-hint" id="authEmailHint"></div>
 <input class="auth-input" type="password" id="authPassword" placeholder="密码" autocomplete="current-password">
 <input class="auth-input" type="password" id="authPassword2" placeholder="确认密码" style="display:none" autocomplete="new-password">
@@ -1268,16 +1268,22 @@ function toggleAuthMode() {
   document.getElementById("authEmailHint").className = "auth-hint";
 }
 
-// Check if email already registered (on blur in register mode)
+// Real-time email check on input in register mode
 var emailCheckTimer = null;
 function checkEmailExists() {
   if (authMode !== "register") return;
   var email = document.getElementById("authEmail").value.trim();
   var hint = document.getElementById("authEmailHint");
   
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!email) {
     hint.textContent = "";
     hint.className = "auth-hint";
+    return;
+  }
+  
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    hint.textContent = "邮箱错误";
+    hint.className = "auth-hint auth-hint-red";
     return;
   }
 
@@ -1301,6 +1307,9 @@ function checkEmailExists() {
           hint.textContent = "该邮箱可用";
           hint.className = "auth-hint auth-hint-green";
         }
+      } else {
+        hint.textContent = "";
+        hint.className = "auth-hint";
       }
     } catch(e) {
       hint.textContent = "";
