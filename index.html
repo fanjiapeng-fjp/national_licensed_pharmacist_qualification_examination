@@ -169,7 +169,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="card"><div class="bold mb-8">快捷入口</div>
 <div class="flex gap-8" style="flex-wrap:wrap">
 <button class="btn btn-primary btn-sm" onclick="switchTab(1)">章节练习</button>
-<button class="btn btn-outline btn-sm" onclick="switchTab(2)">错题本</button>
+<button class="btn btn-outline btn-sm" onclick="switchTab(2)">错题合集</button>
 <button class="btn btn-outline btn-sm" onclick="switchTab(3)">模拟考试</button>
 <button class="btn btn-outline btn-sm" onclick="switchTab(5)">跨科速查</button>
 </div></div>
@@ -192,6 +192,10 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div id="quizTypeTag" class="tag mb-8">A型题</div>
 <div class="fs-lg bold mb-8" id="quizQuestion"></div>
 <div id="quizOptions"></div>
+<div class="mt-12" id="quizTipSection">
+<button class="btn btn-outline btn-sm" id="quizTipBtn" onclick="toggleQuizTip()">💡 查看提示</button>
+<div id="quizTipContent" class="analysis-box" style="display:none;margin-top:8px;background:#E3F2FD;border-left-color:var(--blue)"></div>
+</div>
 <div id="quizAnalysis" class="analysis-box" style="display:none">
 <div class="bold mb-4">✅ 正确答案：<span id="quizAnswer"></span></div>
 <div class="mb-4" id="quizAnalysisText"></div>
@@ -212,9 +216,15 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 </div>
 
 <div class="page" id="page-exam">
-<div class="card"><div class="fs-xl bold text-center">全真模拟考试</div><div class="text-center mt-8" style="color:#888">100题 · 150分钟 · 4科目</div></div>
-<div class="card"><div class="bold mb-8">考试规则</div><ul style="padding-left:24px;line-height:2"><li>共100道题，涵盖药一/药二/药综/法规</li><li>考试时长150分钟，中途退出作废</li><li>交卷后自动出分，错题自动归入错题本</li></ul></div>
-<div style="padding:0 16px"><button class="btn btn-primary btn-block" onclick="startExam()" id="startExamBtn">开始考试</button></div>
+<div class="card"><div class="fs-xl bold text-center">模拟考试</div><div class="text-center mt-8" style="color:#888">选择考试类型开始</div></div>
+<div class="card"><div class="bold mb-8">考试规则</div><ul style="padding-left:24px;line-height:2"><li>全科综合：120题/150分钟，四科混合</li><li>单科专项：40题/60分钟，单科深度练习</li><li>中途退出作废，交卷后自动出分</li><li>错题自动归入错题合集</li></ul></div>
+<div style="padding:0 16px;display:flex;flex-direction:column;gap:10px">
+<button class="btn btn-primary btn-block" onclick="startExam(0)" id="startExamAllBtn">🧪 全科综合模拟（120题·150分钟）</button>
+<button class="btn btn-outline btn-block" onclick="startExam(1)" id="startExamS1Btn">🧪 药一 专项模拟（40题·60分钟）</button>
+<button class="btn btn-outline btn-block" onclick="startExam(2)" id="startExamS2Btn">💊 药二 专项模拟（40题·60分钟）</button>
+<button class="btn btn-outline btn-block" onclick="startExam(3)" id="startExamS3Btn">📋 药综 专项模拟（40题·60分钟）</button>
+<button class="btn btn-outline btn-block" onclick="startExam(4)" id="startExamS4Btn">⚖️ 法规 专项模拟（40题·60分钟）</button>
+</div>
 <div class="card" id="examHistory"><div class="bold mb-8">历史成绩</div><div id="examRecords" class="empty-state"><span class="empty-icon">📊</span>暂无记录</div></div>
 </div>
 
@@ -226,6 +236,10 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="tag mb-8" id="examQType">A型题</div>
 <div class="fs-lg bold mb-8" id="examQuestion"></div>
 <div id="examOptions"></div>
+<div class="mt-12" id="examTipSection">
+<button class="btn btn-outline btn-sm" id="examTipBtn" onclick="toggleExamTip()">💡 查看提示</button>
+<div id="examTipContent" class="analysis-box" style="display:none;margin-top:8px;background:#E3F2FD;border-left-color:var(--blue)"></div>
+</div>
 <div class="flex gap-8 mt-16">
 <button class="btn btn-outline btn-sm flex-1" onclick="examPrev()">上一题</button>
 <span class="flex items-center" style="white-space:nowrap"><span id="examProgress">1/100</span></span>
@@ -341,7 +355,7 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="nav">
 <button class="nav-item active" onclick="switchTab(0)"><span class="nav-icon">🏠</span>首页</button>
 <button class="nav-item" onclick="switchTab(1)"><span class="nav-icon">📖</span>章节练习</button>
-<button class="nav-item" onclick="switchTab(2)"><span class="nav-icon">📝</span>错题本</button>
+<button class="nav-item" onclick="switchTab(2)"><span class="nav-icon">📝</span>错题合集</button>
 <button class="nav-item" onclick="switchTab(3)"><span class="nav-icon">📋</span>模拟考试</button>
 <button class="nav-item" onclick="switchTab(4)"><span class="nav-icon">📊</span>学习报告</button>
 <button class="nav-item" onclick="switchTab(5)"><span class="nav-icon">🔍</span>跨科速查</button>
@@ -828,6 +842,16 @@ function renderQuizQuestion() {
     optHTML += '<button class="option-item" onclick="answerQuiz('+i+')" data-idx="'+i+'">'+String.fromCharCode(65+i)+'. '+opt+'</button>';
   });
   document.getElementById("quizOptions").innerHTML = optHTML;
+  var tips = q.tips || "";
+  if (!tips) {
+    document.getElementById("quizTipBtn").disabled = true;
+    document.getElementById("quizTipBtn").textContent = "💡 暂无提示";
+  } else {
+    document.getElementById("quizTipBtn").disabled = false;
+    document.getElementById("quizTipBtn").textContent = "💡 查看提示";
+  }
+  document.getElementById("quizTipContent").textContent = tips || "暂无提示";
+  document.getElementById("quizTipContent").style.display = "none";
   document.getElementById("quizAnalysis").style.display = "none";
   document.getElementById("quizNextBtn").style.display = "none";
 }
@@ -878,6 +902,31 @@ function answerQuiz(choiceIdx) {
   var nb = document.getElementById("quizNextBtn");
   nb.style.display = "block";
   nb.textContent = quizState.currentIdx < quizState.questions.length-1 ? "下一题 →" : "完成 ✅";
+}
+
+
+function toggleQuizTip() {
+  var content = document.getElementById("quizTipContent");
+  var btn = document.getElementById("quizTipBtn");
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    btn.textContent = "💡 隐藏提示";
+  } else {
+    content.style.display = "none";
+    btn.textContent = "💡 查看提示";
+  }
+}
+
+function toggleExamTip() {
+  var content = document.getElementById("examTipContent");
+  var btn = document.getElementById("examTipBtn");
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    btn.textContent = "💡 隐藏提示";
+  } else {
+    content.style.display = "none";
+    btn.textContent = "💡 查看提示";
+  }
 }
 
 function nextQuestion() {
@@ -950,15 +999,34 @@ function renderExam() {
   } else {
     var h = "";
     records.slice(-5).reverse().forEach(function(r,i){
-      h += '<div class="chapter-row"><span class="tag'+(r.rate>=60?" tag-green":" tag-red")+'">'+r.rate+'%</span><div class="chapter-info"><div class="chapter-name">模拟考试 #'+(records.length-i)+'</div><div class="chapter-meta">'+r.date+' · '+r.score+'分</div></div></div>';
+      var label = r.label || ("模拟考试 #"+(records.length-i));
+      var scoreText = r.totalQ ? (r.score+"/"+r.totalQ) : (r.score+"分");
+      h += '<div class="chapter-row"><span class="tag'+(r.rate>=60?" tag-green":" tag-red")+'">'+r.rate+'%</span><div class="chapter-info"><div class="chapter-name">'+label+'</div><div class="chapter-meta">'+r.date+' · '+scoreText+'</div></div></div>';
     });
     document.getElementById("examRecords").innerHTML = h;
   }
 }
 
-function startExam() {
-  var shuffled = QUESTIONS.slice().sort(function(){ return Math.random()-0.5; }).slice(0,100);
-  examState = { questions: shuffled, currentIdx: 0, answers: new Array(100).fill(null), startTime: Date.now(), duration: 150*60, timer: null };
+function startExam(subjectId) {
+  // subjectId: 0/null = all subjects, 1=药一, 2=药二, 3=药综, 4=法规
+  var pool;
+  var totalQ, duration, examLabel;
+  if (!subjectId || subjectId === 0) {
+    pool = QUESTIONS.slice();
+    totalQ = 120;
+    duration = 150 * 60;
+    examLabel = "全科综合模拟";
+  } else {
+    pool = QUESTIONS.filter(function(q){ return q.subject === subjectId; });
+    totalQ = Math.min(pool.length, 40);
+    duration = 60 * 60;
+    var subNames = {1:"药一 专项模拟", 2:"药二 专项模拟", 3:"药综 专项模拟", 4:"法规 专项模拟"};
+    examLabel = subNames[subjectId] || "单科模拟";
+  }
+  if (pool.length < totalQ) totalQ = pool.length;
+  if (totalQ === 0) { toast("该科目暂无题目"); return; }
+  var shuffled = pool.slice().sort(function(){ return Math.random()-0.5; }).slice(0, totalQ);
+  examState = { questions: shuffled, currentIdx: 0, answers: new Array(totalQ).fill(null), startTime: Date.now(), duration: duration, timer: null, subjectId: subjectId, examLabel: examLabel, totalQ: totalQ };
   pages.forEach(function(p){ document.getElementById(p).classList.remove("active"); });
   document.getElementById("page-exam-running").classList.add("active");
   examState.timer = setInterval(updateExamTimer, 1000);
@@ -977,16 +1045,26 @@ function renderExamQuestion() {
   var q = examState.questions[examState.currentIdx];
   document.getElementById("examQType").textContent = "ABCD"["ABCX".indexOf(q.type)] + "型题";
   document.getElementById("examQuestion").textContent = q.question;
-  document.getElementById("examProgress").textContent = (examState.currentIdx+1)+"/100";
+  document.getElementById("examProgress").textContent = (examState.currentIdx+1)+"/"+examState.totalQ;
   var h = "";
   q.options.forEach(function(opt,i){
     h += '<button class="option-item'+(examState.answers[examState.currentIdx]===i?" correct":"")+'" onclick="examAnswer('+i+')">'+String.fromCharCode(65+i)+'. '+opt+'</button>';
   });
   document.getElementById("examOptions").innerHTML = h;
+  var etips = q.tips || "";
+  if (!etips) {
+    document.getElementById("examTipBtn").disabled = true;
+    document.getElementById("examTipBtn").textContent = "💡 暂无提示";
+  } else {
+    document.getElementById("examTipBtn").disabled = false;
+    document.getElementById("examTipBtn").textContent = "💡 查看提示";
+  }
+  document.getElementById("examTipContent").textContent = etips || "暂无提示";
+  document.getElementById("examTipContent").style.display = "none";
 }
 
 function examAnswer(i) { examState.answers[examState.currentIdx] = i; renderExamQuestion(); setTimeout(function(){ examNextQ(); }, 300); }
-function examNextQ() { if(examState.currentIdx<99) { examState.currentIdx++; renderExamQuestion(); } }
+function examNextQ() { if(examState.currentIdx<examState.totalQ-1) { examState.currentIdx++; renderExamQuestion(); } }
 function examPrev() { if(examState.currentIdx>0) { examState.currentIdx--; renderExamQuestion(); } }
 
 function submitExam() {
@@ -1026,7 +1104,7 @@ function submitExam() {
   });
   document.getElementById("examSubjectScores").innerHTML = sh;
   examState = null;
-  setTimeout(function(){ toast("错题已自动归入错题本"); }, 500);
+  setTimeout(function(){ toast("错题已自动归入错题合集"); }, 500);
 }
 
 // ===== REPORT =====
