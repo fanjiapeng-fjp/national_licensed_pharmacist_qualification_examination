@@ -101,7 +101,8 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 
 <!-- Normal auth form -->
 <div id="authNormal">
-<input class="auth-input" type="email" id="authEmail" placeholder="邮箱地址" autocomplete="email">
+<input class="auth-input" type="email" id="authEmail" placeholder="邮箱地址" autocomplete="email" onblur="checkEmailExists()">
+<div class="auth-hint" id="authEmailHint"></div>
 <input class="auth-input" type="password" id="authPassword" placeholder="密码" autocomplete="current-password">
 <input class="auth-input" type="password" id="authPassword2" placeholder="确认密码" style="display:none" autocomplete="new-password">
 <input class="auth-input" type="text" id="authUsername" placeholder="用户名（2-20个字符）" style="display:none" autocomplete="off">
@@ -1263,6 +1264,50 @@ function toggleAuthMode() {
   document.getElementById("authPassword").value = "";
   document.getElementById("authPassword2").value = "";
   document.getElementById("authUsername").value = "";
+  document.getElementById("authEmailHint").textContent = "";
+  document.getElementById("authEmailHint").className = "auth-hint";
+}
+
+// Check if email already registered (on blur in register mode)
+var emailCheckTimer = null;
+function checkEmailExists() {
+  if (authMode !== "register") return;
+  var email = document.getElementById("authEmail").value.trim();
+  var hint = document.getElementById("authEmailHint");
+  
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    hint.textContent = "";
+    hint.className = "auth-hint";
+    return;
+  }
+
+  hint.textContent = "检查中...";
+  hint.className = "auth-hint";
+  
+  clearTimeout(emailCheckTimer);
+  emailCheckTimer = setTimeout(async function() {
+    try {
+      var res = await fetch(SUPABASE_URL + "/rest/v1/rpc/check_email_exists", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ email_param: email })
+      });
+      if (res.ok) {
+        var exists = await res.json();
+        if (exists === true) {
+          hint.textContent = "该邮箱已被注册";
+          hint.className = "auth-hint auth-hint-red";
+        } else {
+          hint.textContent = "该邮箱可用";
+          hint.className = "auth-hint auth-hint-green";
+        }
+      }
+    } catch(e) {
+      hint.textContent = "";
+      hint.className = "auth-hint";
+    }
+  }, 400);
+}
   document.getElementById("authMoreLoginList").style.display = "none";
 }
 
@@ -1338,6 +1383,21 @@ async function doAuth() {
 
       var { data: existing } = await supabase.from("profiles").select("username").eq("username", username).maybeSingle();
       if (existing) { errEl.textContent = "该用户名已被占用"; setLoading(false); return; }
+
+      // Pre-check: email already registered?
+      var resCheck = await fetch(SUPABASE_URL + "/rest/v1/rpc/check_email_exists", {
+        method: "POST",
+        headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ email_param: email })
+      });
+      if (resCheck.ok) {
+        var emailExists = await resCheck.json();
+        if (emailExists === true) {
+          errEl.textContent = "该邮箱已被注册，请直接登录或使用其他邮箱";
+          setLoading(false);
+          return;
+        }
+      }
 
       var { data, error } = await supabase.auth.signUp({
         email: email,
