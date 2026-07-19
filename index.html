@@ -351,7 +351,7 @@ function renderHome() {
   var dq = QUESTIONS[seed % QUESTIONS.length];
   var typeName = ["A型题","B型题","C型题","X型题"]["ABCX".indexOf(dq.type)] || "";
   var sub = SUBJECTS.find(function(s){ return s.id===dq.subject; });
-  document.getElementById("dailyQuestion").innerHTML = '<div class="fs-lg bold mb-4">'+dq.question+'</div><div class="mb-8" style="color:#888">['+typeName+'] · '+sub.name+'</div><button class="btn btn-outline btn-sm" onclick="switchTab(1);startQuiz('+dq.subject+',''+dq.chapter+'')">去做题 →</button>';
+  document.getElementById("dailyQuestion").innerHTML = '<div class="fs-lg bold mb-4">'+dq.question+'</div><div class="mb-8" style="color:#888">['+typeName+'] · '+sub.name+'</div><button class="btn btn-outline btn-sm" onclick="switchTab(1);startQuiz('+dq.subject+',\''+dq.chapter+'\')">去做题 →</button>';
 
   if(appData._lastQuiz) document.getElementById("continueLearning").style.display = "block";
 }
@@ -391,7 +391,7 @@ function renderChapters(filter) {
     var color = cq===0 ? "" : rate<60 ? "red" : rate<80 ? "yellow" : "green";
     var qCount = QUESTIONS.filter(function(q){ return q.subject===currentSubject && q.chapter===ch; }).length;
     if(filter && ch.indexOf(filter)<0) return;
-    html += '<div class="chapter-row" onclick="startQuiz('+currentSubject+',''+ch.replace(/'/g,"\'")+'')"><span class="tag'+(color?" tag-"+color:"")+'">'+(color?rate+"%":"NEW")+'</span><div class="chapter-info"><div class="chapter-name">'+ch+'</div><div class="chapter-meta">'+cq+'/'+qCount+'题</div></div><div class="progress-bar" style="width:60px"><div class="progress-fill" style="width:'+rate+'%;background:'+(color?'var(--'+color+')':'#CCC')+'"></div></div></div>';
+    html += '<div class="chapter-row" onclick="startQuiz('+currentSubject+',\''+ch+'\')"><span class="tag'+(color?" tag-"+color:"")+'">'+(color?rate+"%":"NEW")+'</span><div class="chapter-info"><div class="chapter-name">'+ch+'</div><div class="chapter-meta">'+cq+'/'+qCount+'题</div></div><div class="progress-bar" style="width:60px"><div class="progress-fill" style="width:'+rate+'%;background:'+(color?'var(--'+color+')':'#CCC')+'"></div></div></div>';
   });
   document.getElementById("chapterList").innerHTML = html || '<div class="empty-state"><span class="empty-icon">📖</span>暂无匹配章节</div>';
 }
@@ -781,7 +781,7 @@ function globalSearch() {
     if(r.length===0) return;
     html += '<div class="bold mt-12 mb-8">'+s.icon+' '+s.name+'（'+r.length+'条）</div>';
     r.forEach(function(q){
-      html += '<div class="card" style="margin:8px 0;cursor:pointer" onclick="switchTab(1);startQuiz('+q.subject+',''+q.chapter.replace(/'/g,"\'")+'')"><div class="flex gap-8 mb-4"><span class="tag tag-blue">'+q.type+'型</span><span class="tag tag-new">'+(q.is2026New?"2026新增":(q.chapter.split(" ")[1]||q.chapter))+'</span></div><div class="fs-md bold">'+q.question+'</div><div class="mt-4" style="color:var(--accent)">答案：'+q.answer+'</div></div>';
+      html += '<div class="card" style="margin:8px 0;cursor:pointer" onclick="switchTab(1);startQuiz('+q.subject+',\''+q.chapter+'\')"><div class="flex gap-8 mb-4"><span class="tag tag-blue">'+q.type+'型</span><span class="tag tag-new">'+(q.is2026New?"2026新增":(q.chapter.split(" ")[1]||q.chapter))+'</span></div><div class="fs-md bold">'+q.question+'</div><div class="mt-4" style="color:var(--accent)">答案：'+q.answer+'</div></div>';
     });
   });
   document.getElementById("searchResults").innerHTML = html;
@@ -859,3 +859,4 @@ document.documentElement.style.setProperty("--font-xl",(fs+10)+"px");
 </script>
 </body>
 </html>
+
