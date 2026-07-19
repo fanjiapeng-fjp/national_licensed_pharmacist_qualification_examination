@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="执业药师备考">
+<meta name="theme-color" content="#5C4033">
+<title>国家执业药师职业资格考试（2026）</title>
+<link rel="manifest" href="data:application/json,{"name":"\u56fd\u5bb6\u6267\u4e1a\u836f\u5e08\u804c\u4e1a\u8d44\u683c\u8003\u8bd5(2026)","short_name":"\u6267\u4e1a\u836f\u5e08","start_url":".","display":"standalone","background_color":"#F5F0E8","theme_color":"#5C4033"}">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F5F0E8;--card:#FFF8F0;--text:#3E2723;--accent:#8B4513;--green:#2E7D32;--yellow:#F57F17;--red:#C62828;--blue:#1565C0;--border:#D7CCC8;--gold:#FF8F00;--font-xl:28px;--font-lg:22px;--font-md:18px;--font-sm:15px;--font-xs:13px;--radius:12px;--shadow:0 2px 8px rgba(0,0,0,.08)}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);font-size:var(--font-md);line-height:1.6;max-width:960px;margin:0 auto;padding-bottom:80px}
+.header{background:var(--accent);color:#fff;padding:16px 20px;font-size:var(--font-lg);font-weight:700;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;margin:12px 16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;border-radius:8px;border:none;font-size:var(--font-md);font-weight:600;cursor:pointer;transition:all .2s;min-height:56px;gap:8px}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+.btn-sm{padding:8px 16px;font-size:var(--font-sm);min-height:44px}
+.btn-block{width:100%}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:var(--font-xs);font-weight:600}
+.tag-red{background:#FFCDD2;color:var(--red)}.tag-yellow{background:#FFF9C4;color:var(--yellow)}
+.tag-green{background:#C8E6C9;color:var(--green)}.tag-blue{background:#BBDEFB;color:var(--blue)}
+.tag-new{background:#FFE0B2;color:#E65100}
+.progress-bar{height:8px;background:#E8E0D8;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat-item{text-align:center;padding:12px 8px;background:#FFF;border-radius:var(--radius);border:1px solid var(--border)}
+.stat-value{font-size:var(--font-xl);font-weight:700;color:var(--accent)}
+.stat-label{font-size:var(--font-xs);color:#888;margin-top:4px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#FFF;border-top:2px solid var(--border);display:flex;z-index:200;max-width:960px;margin:0 auto;box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;color:#999;font-size:var(--font-xs);gap:3px;transition:color .2s;border:none;background:none}
+.nav-item.active{color:var(--accent);font-weight:700}.nav-icon{font-size:22px}
+.page{display:none}.page.active{display:block}
+.option-item{display:block;width:100%;padding:14px 16px;margin:8px 0;border:2px solid var(--border);border-radius:var(--radius);background:#FFF;text-align:left;font-size:var(--font-md);cursor:pointer;transition:all .2s}
+.option-item:hover{border-color:var(--accent)}
+.option-item.correct{border-color:var(--green);background:#E8F5E9}
+.option-item.wrong{border-color:var(--red);background:#FFEBEE}
+.option-item:disabled{cursor:default}
+.analysis-box{background:#FFFDE7;border-radius:var(--radius);padding:16px;margin-top:12px;border-left:4px solid var(--gold)}
+.tab-row{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;-webkit-overflow-scrolling:touch}
+.tab{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:#FFF;font-size:var(--font-sm);white-space:nowrap;cursor:pointer;flex-shrink:0}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chapter-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:12px;cursor:pointer}
+.chapter-row:hover{background:#FFFBF5}
+.chapter-info{flex:1}.chapter-name{font-weight:600;font-size:var(--font-md)}.chapter-meta{font-size:var(--font-xs);color:#999}
+.countdown{background:#FFECB3;color:#E65100;padding:8px 16px;border-radius:8px;font-weight:700;display:inline-block;font-size:var(--font-lg)}
+.empty-state{text-align:center;padding:40px 20px;color:#999}
+.empty-icon{font-size:60px;display:block;margin-bottom:16px}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:24px;font-size:var(--font-sm);z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.radar-container{width:100%;max-width:320px;margin:0 auto}
+.speed-card{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#FFF8E1,#FFECB3);border-radius:var(--radius);padding:16px;margin:8px 0}
+.search-box{position:sticky;top:56px;z-index:50;background:var(--bg);padding:12px 16px}
+.search-input{width:100%;padding:14px 16px 14px 44px;border-radius:28px;border:2px solid var(--border);font-size:var(--font-md);background:#FFF;outline:none}
+.search-input:focus{border-color:var(--accent)}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid var(--border)}
+.setting-label{font-weight:600}.setting-desc{font-size:var(--font-xs);color:#888}
+.quadrant-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:relative;width:100%;aspect-ratio:1;max-width:400px;margin:0 auto}
+.quadrant{border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:var(--font-xs);padding:8px;text-align:center}
+.fs-sm{font-size:var(--font-sm)}.fs-lg{font-size:var(--font-lg)}.fs-xl{font-size:var(--font-xl)}
+.bold{font-weight:700}.text-green{color:var(--green)}.text-red{color:var(--red)}
+.text-yellow{color:var(--yellow)}.text-blue{color:var(--blue)}.text-accent{color:var(--accent)}
+.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}
+.flex{display:flex}.flex-col{flex-direction:column}.items-center{align-items:center}
+.justify-between{justify-content:space-between}.gap-8{gap:8px}.gap-12{gap:12px}
+.flex-1{flex:1}.text-center{text-align:center}.w-full{width:100%}
+@media(max-width:480px){.stat-grid{gap:8px}.card{margin:8px 12px;padding:12px}}
+</style>
+</head>
+<body>
+<div class="header" id="headerTitle">国家执业药师职业资格考试（2026）</div>
+<div class="toast" id="toast"></div>
+
+<div class="page active" id="page-home">
+<div class="card"><div class="flex justify-between items-center mb-16"><div><span class="fs-sm" style="color:#888">距离考试</span></div><div class="countdown" id="countdown">加载中...</div></div>
+<div class="stat-grid">
+<div class="stat-item"><div class="stat-value" id="todayCount">0</div><div class="stat-label">今日已做题</div></div>
+<div class="stat-item"><div class="stat-value" id="totalCount">0</div><div class="stat-label">总刷题量</div></div>
+<div class="stat-item"><div class="stat-value text-green" id="totalRate">0%</div><div class="stat-label">总正确率</div></div>
+<div class="stat-item"><div class="stat-value text-accent" id="streak">0</div><div class="stat-label">连续学习(天)</div></div>
+</div></div>
+
+<div class="card"><div class="bold mb-8">四科概览</div><div id="subjectOverview"></div></div>
+
+<div class="card" id="weakChapters"><div class="bold mb-8">薄弱章节提醒</div><div id="weakList" class="empty-state"><span class="empty-icon">🎯</span>还没有足够的练习数据</div></div>
+
+<div class="card"><div class="bold mb-8">每日一题</div><div id="dailyQuestion"></div></div>
+
+<div class="card"><div class="bold mb-8">快捷入口</div>
+<div class="flex gap-8" style="flex-wrap:wrap">
+<button class="btn btn-primary btn-sm" onclick="switchTab(1)">章节练习</button>
+<button class="btn btn-outline btn-sm" onclick="switchTab(2)">错题本</button>
+<button class="btn btn-outline btn-sm" onclick="switchTab(3)">模拟考试</button>
+<button class="btn btn-outline btn-sm" onclick="switchTab(5)">跨科速查</button>
+</div></div>
+
+<div class="card" id="continueLearning" style="display:none"><button class="btn btn-primary btn-block" onclick="continueLearning()">📖 继续学习</button></div>
+</div>
+
+<div class="page" id="page-study">
+<div class="tab-row" id="studySubjects"></div>
+<div class="search-box" style="position:sticky;top:54px"><div style="position:relative"><span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#999">🔍</span><input class="search-input" id="studySearch" placeholder="搜索章节或知识点..." oninput="filterChapters()"></div></div>
+<div id="chapterList"></div>
+</div>
+
+<div class="page" id="page-quiz">
+<div style="position:sticky;top:0;background:var(--bg);z-index:50;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+<button class="btn btn-outline btn-sm" onclick="closeQuiz()">← 返回</button>
+<span class="fs-sm" id="quizProgress">1/10</span>
+<span class="fs-sm" style="color:#888" id="quizChapter"></span></div>
+<div class="card">
+<div id="quizTypeTag" class="tag mb-8">A型题</div>
+<div class="fs-lg bold mb-8" id="quizQuestion"></div>
+<div id="quizOptions"></div>
+<div id="quizAnalysis" class="analysis-box" style="display:none">
+<div class="bold mb-4">✅ 正确答案：<span id="quizAnswer"></span></div>
+<div class="mb-4" id="quizAnalysisText"></div>
+<div class="mb-4"><span style="color:#888">规律：</span><span id="quizTips"></span></div>
+<div><span style="color:#888">记忆：</span><span id="quizMemory"></span></div></div>
+<button class="btn btn-primary btn-block mt-16" id="quizNextBtn" style="display:none" onclick="nextQuestion()">下一题 →</button>
+</div></div>
+
+<div class="page" id="page-wrong">
+<div class="tab-row" id="wrongSubjects"></div>
+<div class="flex justify-between items-center" style="padding:12px 16px"><span class="bold">错题分类</span>
+<div class="flex gap-8">
+<button class="btn btn-sm" id="wrongFilterAll" onclick="filterWrong('all')" style="background:var(--accent);color:#fff">全部</button>
+<button class="btn btn-outline btn-sm" id="wrongFilterPending" onclick="filterWrong('pending')">待消灭</button>
+<button class="btn btn-outline btn-sm" id="wrongFilterMastered" onclick="filterWrong('mastered')">已掌握</button>
+</div></div>
+<div id="wrongList" class="empty-state"><span class="empty-icon">📝</span>还没有错题，继续保持！</div>
+</div>
+
+<div class="page" id="page-exam">
+<div class="card"><div class="fs-xl bold text-center">全真模拟考试</div><div class="text-center mt-8" style="color:#888">100题 · 150分钟 · 4科目</div></div>
+<div class="card"><div class="bold mb-8">考试规则</div><ul style="padding-left:24px;line-height:2"><li>共100道题，涵盖药一/药二/药综/法规</li><li>考试时长150分钟，中途退出作废</li><li>交卷后自动出分，错题自动归入错题本</li></ul></div>
+<div style="padding:0 16px"><button class="btn btn-primary btn-block" onclick="startExam()" id="startExamBtn">开始考试</button></div>
+<div class="card" id="examHistory"><div class="bold mb-8">历史成绩</div><div id="examRecords" class="empty-state"><span class="empty-icon">📊</span>暂无记录</div></div>
+</div>
+
+<div class="page" id="page-exam-running">
+<div style="position:sticky;top:0;background:var(--bg);z-index:50;padding:8px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+<span class="fs-sm bold" style="color:var(--red)">⏱ <span id="examTimer">150:00</span></span>
+<button class="btn btn-sm" style="background:var(--red);color:#fff" onclick="submitExam()">交卷</button></div>
+<div class="card">
+<div class="tag mb-8" id="examQType">A型题</div>
+<div class="fs-lg bold mb-8" id="examQuestion"></div>
+<div id="examOptions"></div>
+<div class="flex gap-8 mt-16">
+<button class="btn btn-outline btn-sm flex-1" onclick="examPrev()">上一题</button>
+<span class="flex items-center" style="white-space:nowrap"><span id="examProgress">1/100</span></span>
+<button class="btn btn-outline btn-sm flex-1" onclick="examNextQ()">下一题</button>
+</div></div></div>
+
+<div class="page" id="page-exam-result">
+<div class="card text-center"><div style="font-size:72px">📝</div>
+<div class="fs-xl bold mt-8">考试完成！</div>
+<div class="stat-grid mt-16">
+<div class="stat-item"><div class="stat-value" id="examScore">0</div><div class="stat-label">总分</div></div>
+<div class="stat-item"><div class="stat-value text-green" id="examRate">0%</div><div class="stat-label">正确率</div></div></div>
+<div class="mt-16" id="examSubjectScores"></div>
+<div class="flex gap-8 mt-16"><button class="btn btn-primary flex-1" onclick="switchTab(0)">返回首页</button><button class="btn btn-outline flex-1" onclick="switchTab(2)">查看错题</button></div>
+</div></div>
+
+<div class="page" id="page-report">
+<div class="card"><div class="bold mb-8">四科掌握度</div>
+<div class="radar-container"><canvas id="radarChart" width="300" height="300"></canvas></div>
+<div id="radarLegend" class="flex justify-between gap-8 mt-8" style="flex-wrap:wrap"></div></div>
+<div class="card"><div class="bold mb-8">章节正确率排行</div><div id="chapterRank"></div></div>
+<div class="card"><div class="bold mb-8">时间-正确率四象限</div>
+<div class="quadrant-grid" id="quadrantChart">
+<div class="quadrant" style="grid-column:1;grid-row:1;background:#FFEBEE">耗时低·正确率高<br/>性价比★</div>
+<div class="quadrant" style="grid-column:2;grid-row:1;background:#E8F5E9">耗时高·正确率高<br/>保持</div>
+<div class="quadrant" style="grid-column:1;grid-row:2;background:#FFF9C4">耗时低·正确率低<br/>忽略</div>
+<div class="quadrant" style="grid-column:2;grid-row:2;background:#FFCDD2">耗时高·正确率低<br/>重点攻克</div></div></div>
+<div class="card"><div class="bold mb-8">智能复习建议</div><div id="smartAdvice" class="empty-state"><span class="empty-icon">🤖</span>需要更多学习数据来生成建议</div></div>
+</div>
+
+<div class="page" id="page-search">
+<div class="search-box" style="position:sticky;top:0"><div style="position:relative"><span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#999">🔍</span><input class="search-input" id="globalSearch" placeholder="搜索药名/疾病/知识点..." oninput="globalSearch()"></div></div>
+<div class="tab-row" id="searchSubjects"></div>
+<div id="searchResults" class="empty-state"><span class="empty-icon">🔎</span>输入关键词开始搜索</div>
+<div class="card" id="searchHistory" style="display:none"><div class="bold mb-8">搜索历史</div><div id="searchHistoryList"></div></div>
+<div class="card" id="memoryCards"><div class="bold mb-8">速记卡片</div><div id="memoryCardList"></div></div>
+</div>
+
+<div class="page" id="page-settings">
+<div class="card"><div class="bold mb-8">学习数据总览</div>
+<div class="stat-grid">
+<div class="stat-item"><div class="stat-value" id="sTotal">0</div><div class="stat-label">总刷题</div></div>
+<div class="stat-item"><div class="stat-value text-green" id="sRate">0%</div><div class="stat-label">正确率</div></div>
+<div class="stat-item"><div class="stat-value text-accent" id="sStreak">0</div><div class="stat-label">连续学习(天)</div></div>
+<div class="stat-item"><div class="stat-value" id="sDuration">0h</div><div class="stat-label">累计学习</div></div></div></div>
+
+<div class="card">
+<div class="setting-row"><div><div class="setting-label">备考阶段</div><div class="setting-desc">调整首页布局与策略</div></div>
+<select id="studyPhase" onchange="updatePhase()" style="padding:8px 16px;border-radius:8px;border:1px solid var(--border);font-size:var(--font-sm)">
+<option value="basic">基础期</option><option value="intensive">强化期</option><option value="sprint">冲刺期</option></select></div>
+<div class="setting-row"><div><div class="setting-label">场景模式</div><div class="setting-desc">调整字体与配色</div></div>
+<select id="sceneMode" onchange="updateScene()" style="padding:8px 16px;border-radius:8px;border:1px solid var(--border);font-size:var(--font-sm)">
+<option value="normal">标准</option><option value="commute">通勤（大字）</option><option value="night">深夜（暗色）</option><option value="elder">长辈（超大+暖色）</option></select></div>
+<div class="setting-row"><div><div class="setting-label">每日目标</div><div class="setting-desc">自定义每日刷题量</div></div>
+<div class="flex items-center gap-8"><input type="number" id="dailyGoal" value="50" min="10" max="200" style="width:60px;padding:6px;text-align:center;border:1px solid var(--border);border-radius:6px;font-size:var(--font-md)"><span class="fs-sm">题/天</span></div></div>
+<div class="setting-row"><div><div class="setting-label">字体大小</div></div>
+<select id="fontSize" onchange="updateFontSize()" style="padding:8px 16px;border-radius:8px;border:1px solid var(--border);font-size:var(--font-sm)">
+<option value="18">小</option><option value="22" selected>中</option><option value="28">大</option></select></div>
+<div class="setting-row"><div><div class="setting-label">缓存管理</div><div class="setting-desc" id="cacheSize"></div></div>
+<button class="btn btn-outline btn-sm" onclick="clearCache()">清理缓存</button></div>
+<div class="setting-row"><div><div class="setting-label">数据导出</div><div class="setting-desc">备份学习数据</div></div>
+<button class="btn btn-outline btn-sm" onclick="exportData()">导出JSON</button></div></div>
+
+<div class="card" style="text-align:center;color:#888">
+<div>考纲版本：2026年·第九版</div><div class="mt-8">应用版本：2.0.0</div></div>
+</div>
+
+<div class="nav">
+<button class="nav-item active" onclick="switchTab(0)"><span class="nav-icon">🏠</span>首页</button>
+<button class="nav-item" onclick="switchTab(1)"><span class="nav-icon">📖</span>章节练习</button>
+<button class="nav-item" onclick="switchTab(2)"><span class="nav-icon">📝</span>错题本</button>
+<button class="nav-item" onclick="switchTab(3)"><span class="nav-icon">📋</span>模拟考试</button>
+<button class="nav-item" onclick="switchTab(4)"><span class="nav-icon">📊</span>学习报告</button>
+<button class="nav-item" onclick="switchTab(5)"><span class="nav-icon">🔍</span>跨科速查</button>
+<button class="nav-item" onclick="switchTab(6)"><span class="nav-icon">⚙️</span>个人中心</button>
+</div>
+
+<script>
+var QUESTIONS = [{"id": 1, "subject": 1, "chapter": "第1章 药物化学基础", "type": "A", "question": "下列哪项属于药物的主要化学结合方式？", "options": ["离子键", "氢键", "共价键", "范德华力"], "answer": "C", "analysis": "共价键是药物与受体结合的最主要方式，键能高、结合牢固、不可逆。", "tips": "区分结合方式：共价键不可逆，非共价键可逆。", "memory": "共=共同=牢固=不可逆", "is2026New": false, "keywords": "药物化学,结合方式,共价键"}, {"id": 2, "subject": 1, "chapter": "第1章 药物化学基础", "type": "A", "question": "药物结构中引入氟原子主要目的是？", "options": ["增加水溶性", "增加脂溶性", "提高代谢稳定性", "降低毒性"], "answer": "C", "analysis": "引入氟原子可阻断代谢位点，提高药物代谢稳定性，延长半衰期。", "tips": "氟原子=代谢阻断剂=延长作用时间", "memory": "氟服=长期服用=代谢稳定", "is2026New": false, "keywords": "药物化学,氟原子,代谢稳定性"}, {"id": 3, "subject": 1, "chapter": "第1章 药物化学基础", "type": "A", "question": "前药（prodrug）的概念是指？", "options": ["在体内代谢激活的药物", "药物代谢产物", "药物的原始形态", "药物的盐形式"], "answer": "A", "analysis": "前药是指本身无活性，需经体内代谢转化为活性代谢物的药物。", "tips": "前药=体内激活=更优药代", "memory": "前=前面还没激活，进体内才变身", "is2026New": false, "keywords": "前药,代谢激活"}, {"id": 4, "subject": 1, "chapter": "第2章 药物制剂", "type": "A", "question": "下列哪种剂型属于缓控释制剂？", "options": ["普通片剂", "泡腾片", "渗透泵片", "舌下片"], "answer": "C", "analysis": "渗透泵片通过半透膜控制药物释放速率，属于典型的缓控释制剂。", "tips": "渗透泵=半透膜=匀速释放=缓控释", "memory": "渗=渗透=慢慢渗出来", "is2026New": false, "keywords": "制剂,缓控释,渗透泵"}, {"id": 5, "subject": 1, "chapter": "第2章 药物制剂", "type": "A", "question": "制剂中常用的崩解剂是？", "options": ["硬脂酸镁", "微晶纤维素", "羧甲淀粉钠", "滑石粉"], "answer": "C", "analysis": "羧甲淀粉钠吸水膨胀促使片剂崩解，为常用崩解剂。硬脂酸镁是润滑剂，微晶纤维素是填充剂。", "tips": "崩解剂=吸水膨胀帮助散开", "memory": "崩=崩塌=吸水膨胀=散开", "is2026New": false, "keywords": "制剂,崩解剂,羧甲淀粉钠"}, {"id": 6, "subject": 1, "chapter": "第3章 药物分析", "type": "A", "question": "高效液相色谱法（HPLC）中，常用的检测器是？", "options": ["火焰离子化检测器", "紫外检测器", "热导检测器", "电子捕获检测器"], "answer": "B", "analysis": "HPLC最常用紫外检测器（UV），利用药物对紫外光的吸收进行检测。", "tips": "HPLC+UV=黄金搭档", "memory": "HPLC看UV=液相看紫外", "is2026New": false, "keywords": "药物分析,HPLC,紫外检测器"}, {"id": 7, "subject": 1, "chapter": "第3章 药物分析", "type": "A", "question": "药品质量标准中\"含量测定\"通常要求范围是？", "options": ["80%-120%", "90%-110%", "95%-105%", "98%-102%"], "answer": "B", "analysis": "《中国药典》规定，化学药品含量应在标示量的90.0%-110.0%。", "tips": "药典含量=90%-110%", "memory": "9到11=含量范围", "is2026New": true, "keywords": "质量标准,含量测定,药典,2026新增"}, {"id": 8, "subject": 2, "chapter": "第1章 神经系统药物", "type": "A", "question": "苯二氮䓬类药物的主要药理作用是？", "options": ["镇痛", "抗焦虑镇静", "抗癫痫", "抗精神病"], "answer": "B", "analysis": "苯二氮䓬类通过与GABAA受体结合增强GABA能神经传递，产生抗焦虑、镇静催眠作用。", "tips": "苯二氮䓬=GABA增强=抗焦虑催眠", "memory": "苯=笨=让你安静下来", "is2026New": false, "keywords": "神经系统,苯二氮䓬,GABA,抗焦虑"}, {"id": 9, "subject": 2, "chapter": "第1章 神经系统药物", "type": "B", "question": "匹配题：A.吗啡 B.阿司匹林 C.对乙酰氨基酚 D.布洛芬\n①解热镇痛抗炎 ②只解热镇痛不抗炎 ③强效镇痛 ④抗炎为主", "options": ["A-① B-② C-③ D-④", "A-③ B-① C-② D-④", "A-④ B-② C-① D-③", "A-③ B-① C-④ D-②"], "answer": "B", "analysis": "吗啡为强效镇痛药；阿司匹林解热镇痛抗炎三者兼具；对乙酰氨基酚仅解热镇痛无抗炎；布洛芬抗炎作用突出。", "tips": "对乙酰氨基酚=无抗炎（胃不好者的首选发热药）", "memory": "吗啡强痛，阿司全包，对乙无炎，布洛芬抗炎", "is2026New": false, "keywords": "神经系统,镇痛药,NSAIDs,配伍题"}, {"id": 10, "subject": 2, "chapter": "第2章 心血管系统药物", "type": "A", "question": "ACEI类药物（如卡托普利）的主要不良反应是？", "options": ["低血钾", "干咳", "高血糖", "便秘"], "answer": "B", "analysis": "ACEI抑制缓激肽降解，导致缓激肽蓄积引起干咳，为最常见不良反应。", "tips": "ACEI=缓激肽蓄积=干咳", "memory": "A=啊嚏=咳嗽", "is2026New": false, "keywords": "心血管,ACEI,干咳,卡托普利"}, {"id": 11, "subject": 2, "chapter": "第2章 心血管系统药物", "type": "A", "question": "β受体阻滞剂的绝对禁忌证是？", "options": ["高血压", "心绞痛", "支气管哮喘", "甲亢"], "answer": "C", "analysis": "β受体阻滞剂可诱发或加重支气管哮喘，为绝对禁忌证。", "tips": "β阻断=支气管收缩=哮喘禁用", "memory": "β=憋=喘不上来气", "is2026New": false, "keywords": "心血管,β受体阻滞剂,哮喘,禁忌证"}, {"id": 12, "subject": 2, "chapter": "第3章 内分泌系统药物", "type": "A", "question": "二甲双胍的主要降糖机制是？", "options": ["促进胰岛素分泌", "抑制肝糖输出", "增加胰岛素敏感性", "延缓葡萄糖吸收"], "answer": "B", "analysis": "二甲双胍主要通过抑制肝脏糖异生、减少肝糖输出来降低血糖。同时也有轻度增加胰岛素敏感性的作用。", "tips": "二甲双胍=肝糖输出抑制剂=一线口服降糖药", "memory": "二甲=两个甲=肝脏两条路都抑制", "is2026New": false, "keywords": "内分泌,二甲双胍,降糖,糖尿病"}, {"id": 13, "subject": 2, "chapter": "第3章 内分泌系统药物", "type": "C", "question": "患者，女，55岁，2型糖尿病，eGFR 35mL/min。医师应如何调整二甲双胍剂量？", "options": ["维持原剂量", "减量至1/2", "减量至1/4", "停用二甲双胍"], "answer": "D", "analysis": "eGFR<45mL/min时应停用二甲双胍，因其经肾排泄，肾功能不全时易蓄积导致乳酸性酸中毒。", "tips": "eGFR<45=停二甲双胍；eGFR 45-59=减量", "memory": "GFR=45线=二甲双胍生死线", "is2026New": false, "keywords": "内分泌,二甲双胍,肾功能,案例分析"}, {"id": 14, "subject": 3, "chapter": "第1章 药物治疗管理", "type": "A", "question": "患者同时服用华法林和奥美拉唑，药师应重点关注什么？", "options": ["INR值变化", "血糖变化", "肾功能变化", "心电图变化"], "answer": "A", "analysis": "奥美拉唑抑制CYP2C19，减少华法林代谢，导致INR升高、出血风险增加。", "tips": "华法林+PPI=INR飙升=出血风险", "memory": "华法林怕PPI=假怕=INR真高", "is2026New": false, "keywords": "药物相互作用,华法林,奥美拉唑,INR"}, {"id": 15, "subject": 3, "chapter": "第1章 药物治疗管理", "type": "A", "question": "老年患者多重用药的\"Beers标准\"主要用于评估？", "options": ["药物有效性", "潜在不合理用药", "药物经济性", "药物依从性"], "answer": "B", "analysis": "Beers标准是评估老年人潜在不合理用药（PIM）的权威工具，2023版已更新。", "tips": "Beers=老年人慎用药清单", "memory": "Beer=啤酒=老年人少喝=慎用", "is2026New": true, "keywords": "多重用药,Beers标准,老年人,2026新增"}, {"id": 16, "subject": 3, "chapter": "第2章 处方审核与调配", "type": "A", "question": "处方中\"Sig: qd\"的含义是？", "options": ["每日一次", "每日两次", "每6小时一次", "必要时"], "answer": "A", "analysis": "qd来自拉丁语quaque die，意为每日一次。bid=每日两次，tid=每日三次，qid=每日四次。", "tips": "qd=1天1次, bid=1天2次, tid=1天3次", "memory": "q=每天, d=1=qd=每天1次", "is2026New": false, "keywords": "处方缩写,qd,拉丁语"}, {"id": 17, "subject": 3, "chapter": "第2章 处方审核与调配", "type": "X", "question": "下列哪些属于处方审核的内容？（多选）", "options": ["适应证审核", "用法用量审核", "配伍禁忌审核", "医保报销比例审核"], "answer": "ABC", "analysis": "处方审核核心内容：适应证、用法用量、配伍禁忌、相互作用等。医保报销比例不属于药学审核范畴。", "tips": "处方审核=4大核心：适应、用法、配伍、相互", "memory": "审处方=审4样=适应/用法/配伍/相互", "is2026New": false, "keywords": "处方审核,适应证,配伍禁忌"}, {"id": 18, "subject": 3, "chapter": "第3章 用药教育与指导", "type": "A", "question": "患者在服用头孢类抗生素期间饮酒，可能发生？", "options": ["低血糖反应", "双硫仑样反应", "过敏反应", "肾毒性"], "answer": "B", "analysis": "头孢类抗生素（尤其是含甲硫四氮唑侧链者）抑制乙醛脱氢酶，饮酒后导致乙醛蓄积，出现双硫仑样反应（面红、心悸、呼吸困难）。", "tips": "头孢+酒=双硫仑=危险！服药期间及停药7天内禁酒", "memory": "头孢碰酒=头孢就（酒）=双硫仑", "is2026New": false, "keywords": "用药教育,双硫仑反应,头孢,酒精"}, {"id": 19, "subject": 3, "chapter": "第3章 用药教育与指导", "type": "C", "question": "患者咨询：\"我忘了吃降压药，已经过了8小时，现在应该补服吗？\"药师应该如何回答？", "options": ["立即补服双倍剂量", "立即补服正常剂量", "跳过本次，下次按时服用", "改为晚上服用"], "answer": "C", "analysis": "已超过服药时间一半以上（如bid用药已过6小时），应跳过本次，下次正常服用。补服双倍剂量有低血压风险。", "tips": "漏服超过一半时间=跳过，不到一半时间=补服", "memory": "过半不补，未半补服", "is2026New": false, "keywords": "用药教育,漏服,降压药,服药时间"}, {"id": 20, "subject": 4, "chapter": "第1章 药品管理法", "type": "A", "question": "《药品管理法》规定，生产假药的处罚是？", "options": ["罚款货值金额2-5倍", "罚款货值金额5-15倍", "罚款货值金额15-30倍", "罚款货值金额30-50倍"], "answer": "C", "analysis": "2019年修订《药品管理法》大幅提高处罚力度，生产假药处货值金额15倍以上30倍以下罚款。", "tips": "假药=15-30倍=史上最严", "memory": "假=15-30=造假让你赔到倾家荡产", "is2026New": true, "keywords": "药品管理法,假药,处罚,2026新增"}, {"id": 21, "subject": 4, "chapter": "第1章 药品管理法", "type": "A", "question": "\"四个最严\"要求不包括？", "options": ["最严谨的标准", "最严格的监管", "最严厉的处罚", "最严格的审批"], "answer": "D", "analysis": "\"四个最严\"为：最严谨的标准、最严格的监管、最严厉的处罚、最严肃的问责。不包含\"最严格的审批\"。", "tips": "四个最严=标准+监管+处罚+问责（4S：Standard/Supervision/Sanction/Serious问责）", "memory": "四个最严记：标、管、罚、问（标准/监管/处罚/问责）", "is2026New": false, "keywords": "药品管理法,四个最严,法规"}, {"id": 22, "subject": 4, "chapter": "第2章 药品注册管理", "type": "A", "question": "药品上市许可持有人制度（MAH）中，持有人可以是？", "options": ["只能是生产企业", "只能是研发机构", "研发机构或生产企业", "只能是经营企业"], "answer": "C", "analysis": "MAH制度允许研发机构和生产企业成为上市许可持有人，实现上市许可与生产许可分离。", "tips": "MAH=研发者/生产者均可持有", "memory": "MAH=妈=研发和生产都能当妈", "is2026New": false, "keywords": "MAH,上市许可持有人,药品注册"}, {"id": 23, "subject": 4, "chapter": "第2章 药品注册管理", "type": "B", "question": "匹配题：A.I类新药 B.II类新药 C.III类新药 D.IV类新药\n①创新药 ②改良型新药 ③仿制药 ④境外已上市境内未上市", "options": ["A-① B-② C-③ D-④", "A-① B-② C-④ D-③", "A-② B-① C-④ D-③", "A-① B-④ C-② D-③"], "answer": "B", "analysis": "I类=创新药（全球新），II类=改良型新药，III类=仿制境外已上市境内未上市，IV类=仿制境内已上市。", "tips": "药注册分类：I创II改III境外IV境内", "memory": "1创2改3境外4境内", "is2026New": false, "keywords": "药品注册,新药分类,注册分类"}, {"id": 24, "subject": 4, "chapter": "第3章 GSP/GMP", "type": "A", "question": "药品经营企业必须取得什么证书？", "options": ["GMP证书", "GSP证书", "GCP证书", "GLP证书"], "answer": "B", "analysis": "GSP（药品经营质量管理规范）是药品经营企业必须遵守的规范。GMP=生产，GCP=临床试验，GLP=实验室。", "tips": "GSP=Sell=销售=经营；GMP=Make=制造=生产", "memory": "生产GMP/经营GSP/临床GCP/实验GLP", "is2026New": false, "keywords": "GSP,药品经营,质量管理"}, {"id": 25, "subject": 4, "chapter": "第3章 GSP/GMP", "type": "X", "question": "下列属于《药品经营质量管理规范》要求的内容有？（多选）", "options": ["药品采购验收", "药品储存养护", "药品销售与售后服务", "新药临床试验"], "answer": "ABC", "analysis": "GSP规范涵盖药品采购、验收、储存、养护、销售、运输、售后服务等经营全环节。临床试验属于GCP范畴。", "tips": "GSP=进销存全链条管理", "memory": "GSP管进销存，GCP管临床试验", "is2026New": false, "keywords": "GSP,药品经营,质量管理"}, {"id": 26, "subject": 1, "chapter": "第2章 药物制剂", "type": "B", "question": "匹配：A.增溶剂 B.助溶剂 C.潜溶剂 D.乳化剂\n①吐温80 ②丙二醇 ③苯甲酸钠 ④阿拉伯胶", "options": ["A-① B-③ C-② D-④", "A-② B-③ C-① D-④", "A-① B-② C-③ D-④", "A-④ B-③ C-② D-①"], "answer": "A", "analysis": "吐温80为表面活性剂常用增溶剂；苯甲酸钠为助溶剂；丙二醇为潜溶剂；阿拉伯胶为天然乳化剂。", "tips": "增溶剂=表活；助溶剂=增加溶解度的辅料；潜溶剂=混合溶剂", "memory": "增=表活，助=辅料，潜=混合", "is2026New": false, "keywords": "制剂,增溶剂,助溶剂,潜溶剂"}, {"id": 27, "subject": 1, "chapter": "第4章 生物药剂学", "type": "A", "question": "药物的首过效应主要发生在哪个器官？", "options": ["肾脏", "肝脏", "肺脏", "心脏"], "answer": "B", "analysis": "口服药物经胃肠道吸收后经门静脉进入肝脏，部分在肝脏被代谢，称为首过效应（first-pass effect）。", "tips": "首过效应=肝脏代谢=口服生物利用度降低", "memory": "首个过关=肝脏第一个打掉你", "is2026New": false, "keywords": "生物药剂学,首过效应,肝脏"}, {"id": 28, "subject": 2, "chapter": "第2章 心血管系统药物", "type": "C", "question": "患者，男，65岁，高血压合并痛风。下列哪种降压药应慎用？", "options": ["氨氯地平", "氯沙坦", "氢氯噻嗪", "美托洛尔"], "answer": "C", "analysis": "氢氯噻嗪可抑制尿酸排泄，导致血尿酸升高，痛风患者应慎用。氯沙坦有促进尿酸排泄作用，痛风患者可优先选用。", "tips": "氢氯噻嗪=升尿酸=痛风慎用；氯沙坦=降尿酸=痛风优选", "memory": "氢=清=把尿酸清高了（反了）", "is2026New": false, "keywords": "心血管,高血压,痛风,氢氯噻嗪"}, {"id": 29, "subject": 2, "chapter": "第4章 抗感染药物", "type": "A", "question": "青霉素类抗生素的主要不良反应是？", "options": ["肾毒性", "耳毒性", "过敏反应", "肝毒性"], "answer": "C", "analysis": "青霉素类最严重的不良反应是过敏反应，包括皮疹、过敏性休克。使用前必须做皮试。", "tips": "青霉素=过敏=皮试必须做", "memory": "青=轻=轻则皮疹重则休克=过敏", "is2026New": false, "keywords": "抗感染,青霉素,过敏反应,皮试"}, {"id": 30, "subject": 2, "chapter": "第4章 抗感染药物", "type": "A", "question": "下列哪类抗生素对厌氧菌无效？", "options": ["甲硝唑", "克林霉素", "庆大霉素", "头孢西丁"], "answer": "C", "analysis": "庆大霉素属于氨基糖苷类，对厌氧菌天然耐药，因进入细菌需要氧依赖性转运。甲硝唑是抗厌氧菌首选。", "tips": "氨基糖苷类=需氧转运=厌氧菌无效", "memory": "氨基=氨=厌氧=缺氧=天然对抗", "is2026New": false, "keywords": "抗感染,氨基糖苷,厌氧菌"}, {"id": 31, "subject": 3, "chapter": "第1章 药物治疗管理", "type": "B", "question": "配伍：A.阿托伐他汀 B.非洛地平 C.氯吡格雷 D.二甲双胍\n①CYP3A4底物 ②CYP2C19底物 ③需餐中服用减轻胃肠道反应 ④葡萄柚汁影响代谢", "options": ["A-④ B-① C-② D-③", "A-① B-④ C-② D-③", "A-④ B-① C-③ D-②", "A-① B-② C-④ D-③"], "answer": "A", "analysis": "阿托伐他汀受葡萄柚汁影响（CYP3A4）；非洛地平为CYP3A4底物；氯吡格雷需CYP2C19代谢激活；二甲双胍餐中服用减轻胃肠道反应。", "tips": "他汀怕柚子；氯吡格雷需CYP2C19激活", "memory": "他汀+柚子=危险，氯吡+2C19=激活", "is2026New": false, "keywords": "药物相互作用, CYP450, 葡萄柚"}, {"id": 32, "subject": 3, "chapter": "第4章 特殊人群用药", "type": "A", "question": "妊娠期安全分级中，\"X级\"的含义是？", "options": ["安全可用", "权衡利弊后使用", "动物实验有风险但人体数据不足", "绝对禁用"], "answer": "D", "analysis": "FDA妊娠期药物安全分级中X级=已证实对胎儿有危害，妊娠期绝对禁用。如异维A酸、利巴韦林等。", "tips": "X级=绝对禁用=对胎儿有明确危害", "memory": "X=叉=打叉=禁用", "is2026New": false, "keywords": "特殊人群,妊娠期,X级,安全分级"}, {"id": 33, "subject": 3, "chapter": "第4章 特殊人群用药", "type": "A", "question": "儿童用药剂量最常用的计算方法是？", "options": ["按年龄计算", "按体表面积计算", "按体重计算", "按身高计算"], "answer": "C", "analysis": "儿童用药剂量最常用按体重计算（mg/kg）。体表面积法更精确但计算复杂，多用于化疗药物。", "tips": "儿童剂量=mg/kg=体重法", "memory": "小孩按斤吃=公斤体重", "is2026New": false, "keywords": "特殊人群,儿童用药,剂量计算"}, {"id": 34, "subject": 4, "chapter": "第1章 药品管理法", "type": "A", "question": "网络销售处方药的基本要求是？", "options": ["无需任何资质", "仅需营业执照", "需取得药品网络销售资质+药师审核", "只能销售OTC药品"], "answer": "C", "analysis": "网络销售处方药需取得药品网络销售资质，且必须经药师审核处方后方可销售。", "tips": "网售处方药=资质+药师审方", "memory": "网上卖处方=双保险=资质+审方", "is2026New": true, "keywords": "网络售药,处方药,资质,2026新增"}, {"id": 35, "subject": 4, "chapter": "第4章 特殊管理药品", "type": "A", "question": "下列属于麻醉药品的是？", "options": ["地西泮", "吗啡", "苯巴比妥", "艾司唑仑"], "answer": "B", "analysis": "吗啡属于麻醉药品。地西泮、艾司唑仑属于精神药品（第二类），苯巴比妥属精神药品。", "tips": "麻醉药品=强效镇痛药=吗啡、芬太尼等=需专用处方", "memory": "麻=吗=吗啡=麻醉药品", "is2026New": false, "keywords": "特殊管理,麻醉药品,吗啡"}, {"id": 36, "subject": 1, "chapter": "第4章 生物药剂学", "type": "X", "question": "影响药物口服吸收的因素包括？（多选）", "options": ["药物的脂溶性", "胃肠道的pH值", "胃排空速度", "药物的颜色"], "answer": "ABC", "analysis": "药物脂溶性（分配系数）、胃肠道pH（影响解离度）、胃排空速度（影响达小肠时间）均影响口服吸收。药物颜色通常不直接影响吸收。", "tips": "吸收3因素：脂溶性+pH+胃排空", "memory": "吸收=脂+酸+速", "is2026New": false, "keywords": "生物药剂学,口服吸收,影响因素"}, {"id": 37, "subject": 2, "chapter": "第4章 抗感染药物", "type": "X", "question": "下列哪些属于时间依赖性抗生素？（多选）", "options": ["青霉素类", "头孢菌素类", "阿奇霉素", "左氧氟沙星"], "answer": "AB", "analysis": "青霉素和头孢菌素为时间依赖性抗生素（T>MIC），需多次给药维持血药浓度。阿奇霉素和左氧氟沙星为浓度依赖性。", "tips": "时间依赖性=β内酰胺类=需要持续给药", "memory": "青头=时间依赖=多次打", "is2026New": false, "keywords": "抗感染,时间依赖性,抗生素"}, {"id": 38, "subject": 3, "chapter": "第2章 处方审核与调配", "type": "A", "question": "处方中\"sig: 0.25g tid pc\"的含义是？", "options": ["每次0.25g，每日3次，饭后", "每次0.25g，每日2次，饭前", "每次0.25g，每日3次，饭前", "每次0.25mg，每日3次，饭后"], "answer": "A", "analysis": "tid=每日三次，pc=post cibum=饭后。ac=ante cibum=饭前。", "tips": "pc=post cibum=饭后=吃完", "memory": "pc=post吃=饭后", "is2026New": false, "keywords": "处方缩写,tid,pc"}, {"id": 39, "subject": 4, "chapter": "第3章 GSP/GMP", "type": "A", "question": "药品经营企业温湿度监测系统记录的保存期限至少为？", "options": ["1年", "3年", "5年", "永久保存"], "answer": "C", "analysis": "GSP要求温湿度监测数据至少保存5年。冷链药品运输过程中的温度记录也应至少保存5年。", "tips": "温湿度记录=5年=与GSP证书有效期一致", "memory": "温=5年", "is2026New": false, "keywords": "GSP,温湿度监测,记录保存"}];
+var SUBJECTS = [{"id": 1, "name": "药一", "full": "药学专业知识（一）", "icon": "🧪"}, {"id": 2, "name": "药二", "full": "药学专业知识（二）", "icon": "💊"}, {"id": 3, "name": "药综", "full": "药学综合知识与技能", "icon": "📋"}, {"id": 4, "name": "法规", "full": "药事管理与法规", "icon": "⚖️"}];
+var CHAPTERS = {"1": ["第1章 药物化学基础", "第2章 药物制剂", "第3章 药物分析", "第4章 生物药剂学"], "2": ["第1章 神经系统药物", "第2章 心血管系统药物", "第3章 内分泌系统药物", "第4章 抗感染药物"], "3": ["第1章 药物治疗管理", "第2章 处方审核与调配", "第3章 用药教育与指导", "第4章 特殊人群用药"], "4": ["第1章 药品管理法", "第2章 药品注册管理", "第3章 GSP/GMP", "第4章 特殊管理药品"]};
+
+var STORAGE_KEY = "yspx_data_v2";
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || getDefaultData(); }
+  catch(e) { return getDefaultData(); }
+}
+
+function getDefaultData() {
+  return {
+    progress: {},
+    wrongBook: {},
+    daily: {},
+    streak: 0,
+    lastStudyDate: "",
+    examRecords: [],
+    settings: { dailyGoal: 50, fontSize: 22, scene: "normal", phase: "basic" },
+    searchHistory: [],
+    totalDuration: 0
+  };
+}
+
+function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+var appData = loadData();
+
+function toast(msg) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2000);
+}
+
+function getExamDate() { return new Date(2026, 9, 31); }
+
+function updateCountdown() {
+  var diff = Math.ceil((getExamDate() - new Date()) / 86400000);
+  document.getElementById("countdown").textContent = diff > 0 ? diff + "天" : "考试日！";
+}
+
+var pages = ["page-home","page-study","page-wrong","page-exam","page-report","page-search","page-settings","page-quiz","page-exam-running","page-exam-result"];
+var currentTab = 0;
+var currentSubject = 1;
+
+function switchTab(idx) {
+  currentTab = idx;
+  pages.forEach(function(p){ document.getElementById(p).classList.remove("active"); });
+  document.getElementById(pages[idx]).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(function(n,i){ n.classList.toggle("active", i===idx); });
+  if(idx===0) renderHome();
+  if(idx===1) renderStudyTabs();
+  if(idx===2) renderWrongBook();
+  if(idx===3) renderExam();
+  if(idx===4) renderReport();
+  if(idx===5) renderSearch();
+  if(idx===6) renderSettings();
+}
+
+// ===== HOME =====
+function renderHome() {
+  updateCountdown();
+  var today = new Date().toISOString().split("T")[0];
+  var goal = appData.settings.dailyGoal || 50;
+  var todayCount = appData.daily[today] || 0;
+  document.getElementById("todayCount").textContent = todayCount + "/" + goal;
+
+  var totalQ = 0, totalC = 0;
+  for(var qid in appData.progress) {
+    var p = appData.progress[qid];
+    totalQ += (p.correct||0) + (p.wrong||0);
+    totalC += (p.correct||0);
+  }
+  document.getElementById("totalCount").textContent = totalQ;
+  document.getElementById("totalRate").textContent = totalQ>0 ? Math.round(totalC/totalQ*100)+"%" : "0%";
+  document.getElementById("streak").textContent = appData.streak;
+
+  var overviewHTML = "";
+  SUBJECTS.forEach(function(s){
+    var sq=0, sc=0;
+    QUESTIONS.forEach(function(q){
+      if(q.subject===s.id) {
+        var p = appData.progress[q.id] || {correct:0,wrong:0};
+        sq += (p.correct||0)+(p.wrong||0);
+        sc += (p.correct||0);
+      }
+    });
+    var rate = sq>0 ? Math.round(sc/sq*100) : 0;
+    var color = rate<60 ? "red" : rate<80 ? "yellow" : "green";
+    overviewHTML += '<div class="chapter-row"><span style="font-size:24px">'+s.icon+'</span><div class="chapter-info"><div class="chapter-name">'+s.name+' - '+s.full+'</div><div class="chapter-meta">'+sq+'题 · 正确率'+rate+'%</div></div><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:'+rate+'%;background:var(--'+color+')"></div></div></div>';
+  });
+  document.getElementById("subjectOverview").innerHTML = overviewHTML;
+
+  var weakList = [];
+  for(var sid in CHAPTERS) {
+    CHAPTERS[sid].forEach(function(ch){
+      var cq=0, cc=0;
+      QUESTIONS.forEach(function(q){
+        if(q.subject==sid && q.chapter===ch) {
+          var p = appData.progress[q.id] || {correct:0,wrong:0};
+          cq += (p.correct||0)+(p.wrong||0);
+          cc += (p.correct||0);
+        }
+      });
+      if(cq>=3) weakList.push({sid:parseInt(sid), ch:ch, rate:Math.round(cc/cq*100), count:cq});
+    });
+  }
+  weakList.sort(function(a,b){ return a.rate-b.rate; });
+  if(weakList.length>0) {
+    var wHTML = "";
+    weakList.slice(0,3).forEach(function(w){
+      var sub = SUBJECTS.find(function(s){ return s.id===w.sid; });
+      var chName = w.ch.split(" ")[1] || w.ch;
+      var color = w.rate<60 ? "red" : w.rate<80 ? "yellow" : "green";
+      wHTML += '<div class="flex justify-between items-center" style="padding:6px 0"><span>'+sub.icon+' '+sub.name+' · '+chName+'</span><span class="tag tag-'+color+'">'+w.rate+'%</span></div>';
+    });
+    document.getElementById("weakList").innerHTML = wHTML;
+  }
+
+  var seed = new Date().getDate();
+  var dq = QUESTIONS[seed % QUESTIONS.length];
+  var typeName = ["A型题","B型题","C型题","X型题"]["ABCX".indexOf(dq.type)] || "";
+  var sub = SUBJECTS.find(function(s){ return s.id===dq.subject; });
+  document.getElementById("dailyQuestion").innerHTML = '<div class="fs-lg bold mb-4">'+dq.question+'</div><div class="mb-8" style="color:#888">['+typeName+'] · '+sub.name+'</div><button class="btn btn-outline btn-sm" onclick="switchTab(1);startQuiz('+dq.subject+',''+dq.chapter+'')">去做题 →</button>';
+
+  if(appData._lastQuiz) document.getElementById("continueLearning").style.display = "block";
+}
+
+function continueLearning() {
+  var lq = appData._lastQuiz;
+  if(lq) { startQuiz(lq.subject, lq.chapter); return; }
+  switchTab(1);
+}
+
+// ===== CHAPTER STUDY =====
+function renderStudyTabs() {
+  var h = "";
+  SUBJECTS.forEach(function(s){
+    h += '<button class="tab'+(currentSubject===s.id?" active":"")+'" onclick="setStudySubject('+s.id+')">'+s.icon+' '+s.name+'</button>';
+  });
+  document.getElementById("studySubjects").innerHTML = h;
+  renderChapters();
+}
+
+function setStudySubject(sid) { currentSubject = sid; renderStudyTabs(); }
+
+function renderChapters(filter) {
+  filter = filter || "";
+  var chs = CHAPTERS[currentSubject] || [];
+  var html = "";
+  chs.forEach(function(ch){
+    var cq=0, cc=0;
+    QUESTIONS.forEach(function(q){
+      if(q.subject===currentSubject && q.chapter===ch) {
+        var p = appData.progress[q.id] || {correct:0,wrong:0};
+        cq += (p.correct||0)+(p.wrong||0);
+        cc += (p.correct||0);
+      }
+    });
+    var rate = cq>0 ? Math.round(cc/cq*100) : 0;
+    var color = cq===0 ? "" : rate<60 ? "red" : rate<80 ? "yellow" : "green";
+    var qCount = QUESTIONS.filter(function(q){ return q.subject===currentSubject && q.chapter===ch; }).length;
+    if(filter && ch.indexOf(filter)<0) return;
+    html += '<div class="chapter-row" onclick="startQuiz('+currentSubject+',''+ch.replace(/'/g,"\'")+'')"><span class="tag'+(color?" tag-"+color:"")+'">'+(color?rate+"%":"NEW")+'</span><div class="chapter-info"><div class="chapter-name">'+ch+'</div><div class="chapter-meta">'+cq+'/'+qCount+'题</div></div><div class="progress-bar" style="width:60px"><div class="progress-fill" style="width:'+rate+'%;background:'+(color?'var(--'+color+')':'#CCC')+'"></div></div></div>';
+  });
+  document.getElementById("chapterList").innerHTML = html || '<div class="empty-state"><span class="empty-icon">📖</span>暂无匹配章节</div>';
+}
+
+function filterChapters() { renderChapters(document.getElementById("studySearch").value); }
+
+// ===== QUIZ =====
+var quizState = null;
+
+function startQuiz(sid, chapter) {
+  var chQs = QUESTIONS.filter(function(q){ return q.subject===sid && q.chapter===chapter; });
+  if(chQs.length===0) { toast("该章节暂无题目"); return; }
+  quizState = { subject: sid, chapter: chapter, questions: chQs, currentIdx: 0, answered: false };
+  appData._lastQuiz = {subject:sid, chapter:chapter};
+  saveData(appData);
+  pages.forEach(function(p){ document.getElementById(p).classList.remove("active"); });
+  document.getElementById("page-quiz").classList.add("active");
+  renderQuizQuestion();
+}
+
+function closeQuiz() {
+  pages.forEach(function(p){ document.getElementById(p).classList.remove("active"); });
+  document.getElementById(pages[currentTab]).classList.add("active");
+  if(currentTab===0) renderHome();
+  if(currentTab===1) renderChapters();
+}
+
+function renderQuizQuestion() {
+  var q = quizState.questions[quizState.currentIdx];
+  quizState.answered = false;
+  document.getElementById("quizProgress").textContent = (quizState.currentIdx+1)+"/"+quizState.questions.length;
+  document.getElementById("quizChapter").textContent = q.chapter;
+  document.getElementById("quizTypeTag").textContent = "ABCD"["ABCX".indexOf(q.type)] + "型题";
+  document.getElementById("quizQuestion").textContent = q.question;
+  var optHTML = "";
+  q.options.forEach(function(opt, i){
+    optHTML += '<button class="option-item" onclick="answerQuiz('+i+')" data-idx="'+i+'">'+String.fromCharCode(65+i)+'. '+opt+'</button>';
+  });
+  document.getElementById("quizOptions").innerHTML = optHTML;
+  document.getElementById("quizAnalysis").style.display = "none";
+  document.getElementById("quizNextBtn").style.display = "none";
+}
+
+function answerQuiz(choiceIdx) {
+  if(quizState.answered) return;
+  quizState.answered = true;
+  var q = quizState.questions[quizState.currentIdx];
+  var correctIdx = q.answer.charCodeAt(0) - 65;
+  var isCorrect = choiceIdx === correctIdx;
+
+  if(!appData.progress[q.id]) appData.progress[q.id] = {correct:0,wrong:0,lastTime:0};
+  appData.progress[q.id][isCorrect?"correct":"wrong"]++;
+  appData.progress[q.id].lastTime = Date.now();
+
+  if(!isCorrect) {
+    if(!appData.wrongBook[q.id]) appData.wrongBook[q.id] = {consecutive:0,mastered:false,source:"study"};
+    appData.wrongBook[q.id].consecutive = 0;
+    appData.wrongBook[q.id].mastered = false;
+  } else {
+    if(appData.wrongBook[q.id]) {
+      appData.wrongBook[q.id].consecutive++;
+      if(appData.wrongBook[q.id].consecutive >= 3) appData.wrongBook[q.id].mastered = true;
+    }
+  }
+
+  var today = new Date().toISOString().split("T")[0];
+  appData.daily[today] = (appData.daily[today]||0) + 1;
+  if(appData.lastStudyDate !== today) {
+    var yesterday = new Date(Date.now()-86400000).toISOString().split("T")[0];
+    appData.streak = (appData.lastStudyDate===yesterday) ? appData.streak+1 : 1;
+    appData.lastStudyDate = today;
+  }
+  saveData(appData);
+
+  var opts = document.querySelectorAll("#quizOptions .option-item");
+  opts.forEach(function(btn,i){
+    btn.disabled = true;
+    if(i===correctIdx) btn.classList.add("correct");
+    if(i===choiceIdx && !isCorrect) btn.classList.add("wrong");
+  });
+
+  document.getElementById("quizAnswer").textContent = q.answer + ". " + q.options[correctIdx];
+  document.getElementById("quizAnalysisText").textContent = q.analysis;
+  document.getElementById("quizTips").textContent = q.tips;
+  document.getElementById("quizMemory").textContent = q.memory;
+  document.getElementById("quizAnalysis").style.display = "block";
+  var nb = document.getElementById("quizNextBtn");
+  nb.style.display = "block";
+  nb.textContent = quizState.currentIdx < quizState.questions.length-1 ? "下一题 →" : "完成 ✅";
+}
+
+function nextQuestion() {
+  if(quizState.currentIdx < quizState.questions.length-1) {
+    quizState.currentIdx++;
+    renderQuizQuestion();
+    document.getElementById("page-quiz").scrollTo(0,0);
+  } else {
+    toast("本章节已完成！");
+    closeQuiz();
+    renderChapters();
+  }
+}
+
+// ===== WRONG BOOK =====
+var wrongFilter = "all";
+
+function renderWrongBook() {
+  var h = "";
+  SUBJECTS.forEach(function(s){
+    var cnt = 0;
+    for(var qid in appData.wrongBook) {
+      if(!appData.wrongBook[qid].mastered) {
+        var q = QUESTIONS.find(function(x){ return x.id===parseInt(qid); });
+        if(q && q.subject===s.id) cnt++;
+      }
+    }
+    h += '<button class="tab'+(currentSubject===s.id?" active":"")+'" onclick="setStudySubject('+s.id+');renderWrongBook()">'+s.icon+' '+s.name+'('+cnt+')</button>';
+  });
+  document.getElementById("wrongSubjects").innerHTML = h;
+
+  var wrongQs = [];
+  for(var qid in appData.wrongBook) {
+    var wb = appData.wrongBook[qid];
+    var q = QUESTIONS.find(function(x){ return x.id===parseInt(qid); });
+    if(!q) continue;
+    if(wrongFilter==="pending" && wb.mastered) continue;
+    if(wrongFilter==="mastered" && !wb.mastered) continue;
+    if(currentSubject && q.subject !== currentSubject) continue;
+    wrongQs.push({q:q, wb:wb});
+  }
+
+  if(wrongQs.length===0) {
+    document.getElementById("wrongList").innerHTML = '<div class="empty-state"><span class="empty-icon">🎉</span>'+(wrongFilter==="pending"?"所有错题已消灭！":"还没有错题，继续保持！")+'</div>';
+    return;
+  }
+  var wh = "";
+  wrongQs.forEach(function(item){
+    var sub = SUBJECTS.find(function(s){ return s.id===item.q.subject; });
+    wh += '<div class="chapter-row" onclick="retryWrongQ('+item.q.id+')"><span class="tag'+(item.wb.mastered?" tag-green":" tag-red")+'">'+(item.wb.mastered?"已掌握":"待消灭")+'</span><div class="chapter-info"><div class="chapter-name">'+sub.icon+' '+sub.name+' · '+item.q.type+'型</div><div class="chapter-meta">'+item.q.question.substring(0,30)+'...</div></div><span style="font-size:11px;color:#999">'+item.wb.source+'</span></div>';
+  });
+  document.getElementById("wrongList").innerHTML = wh;
+}
+
+function filterWrong(f) { wrongFilter = f; renderWrongBook(); }
+
+function retryWrongQ(qid) {
+  switchTab(1);
+  var q = QUESTIONS.find(function(x){ return x.id===qid; });
+  if(q) startQuiz(q.subject, q.chapter);
+}
+
+// ===== EXAM =====
+var examState = null;
+
+function renderExam() {
+  var records = appData.examRecords || [];
+  if(records.length===0) {
+    document.getElementById("examRecords").innerHTML = '<div class="empty-state"><span class="empty-icon">📊</span>暂无记录</div>';
+  } else {
+    var h = "";
+    records.slice(-5).reverse().forEach(function(r,i){
+      h += '<div class="chapter-row"><span class="tag'+(r.rate>=60?" tag-green":" tag-red")+'">'+r.rate+'%</span><div class="chapter-info"><div class="chapter-name">模拟考试 #'+(records.length-i)+'</div><div class="chapter-meta">'+r.date+' · '+r.score+'分</div></div></div>';
+    });
+    document.getElementById("examRecords").innerHTML = h;
+  }
+}
+
+function startExam() {
+  var shuffled = QUESTIONS.slice().sort(function(){ return Math.random()-0.5; }).slice(0,100);
+  examState = { questions: shuffled, currentIdx: 0, answers: new Array(100).fill(null), startTime: Date.now(), duration: 150*60, timer: null };
+  pages.forEach(function(p){ document.getElementById(p).classList.remove("active"); });
+  document.getElementById("page-exam-running").classList.add("active");
+  examState.timer = setInterval(updateExamTimer, 1000);
+  renderExamQuestion();
+}
+
+function updateExamTimer() {
+  var elapsed = Math.floor((Date.now() - examState.startTime)/1000);
+  var remaining = Math.max(0, examState.duration - elapsed);
+  var mins = Math.floor(remaining/60), secs = remaining%60;
+  document.getElementById("examTimer").textContent = String(mins).padStart(2,"0")+":"+String(secs).padStart(2,"0");
+  if(remaining<=0) submitExam();
+}
+
+function renderExamQuestion() {
+  var q = examState.questions[examState.currentIdx];
+  document.getElementById("examQType").textContent = "ABCD"["ABCX".indexOf(q.type)] + "型题";
+  document.getElementById("examQuestion").textContent = q.question;
+  document.getElementById("examProgress").textContent = (examState.currentIdx+1)+"/100";
+  var h = "";
+  q.options.forEach(function(opt,i){
+    h += '<button class="option-item'+(examState.answers[examState.currentIdx]===i?" correct":"")+'" onclick="examAnswer('+i+')">'+String.fromCharCode(65+i)+'. '+opt+'</button>';
+  });
+  document.getElementById("examOptions").innerHTML = h;
+}
+
+function examAnswer(i) { examState.answers[examState.currentIdx] = i; renderExamQuestion(); setTimeout(function(){ examNextQ(); }, 300); }
+function examNextQ() { if(examState.currentIdx<99) { examState.currentIdx++; renderExamQuestion(); } }
+function examPrev() { if(examState.currentIdx>0) { examState.currentIdx--; renderExamQuestion(); } }
+
+function submitExam() {
+  if(!confirm("确定要交卷吗？交卷后无法修改。")) return;
+  clearInterval(examState.timer);
+  var score=0, correct=0;
+  var subScores = {1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0}};
+  examState.questions.forEach(function(q,i){
+    var ca = q.answer.charCodeAt(0)-65;
+    subScores[q.subject].t++;
+    if(examState.answers[i]===ca) {
+      score++; correct++;
+      subScores[q.subject].c++;
+      if(appData.wrongBook[q.id]) {
+        appData.wrongBook[q.id].consecutive++;
+        if(appData.wrongBook[q.id].consecutive>=3) appData.wrongBook[q.id].mastered = true;
+      }
+    } else {
+      if(!appData.wrongBook[q.id]) appData.wrongBook[q.id] = {consecutive:0,mastered:false,source:"exam"};
+      else if(appData.wrongBook[q.id].mastered) { appData.wrongBook[q.id].consecutive=0; appData.wrongBook[q.id].mastered=false; }
+    }
+  });
+  var rate = Math.round(correct/100*100);
+  var record = { date: new Date().toISOString().split("T")[0], score:score, rate:rate };
+  appData.examRecords.push(record);
+  appData.totalDuration = (appData.totalDuration||0) + Math.floor((Date.now()-examState.startTime)/60000);
+  saveData(appData);
+
+  pages.forEach(function(p){ document.getElementById(p).classList.remove("active"); });
+  document.getElementById("page-exam-result").classList.add("active");
+  document.getElementById("examScore").textContent = score;
+  document.getElementById("examRate").textContent = rate+"%";
+  var sh = "";
+  SUBJECTS.forEach(function(s){
+    var ss = subScores[s.id];
+    sh += '<div class="chapter-row"><span>'+s.icon+'</span><div class="chapter-info">'+s.name+'</div><span class="bold">'+ss.c+'/'+ss.t+'</span></div>';
+  });
+  document.getElementById("examSubjectScores").innerHTML = sh;
+  examState = null;
+  setTimeout(function(){ toast("错题已自动归入错题本"); }, 500);
+}
+
+// ===== REPORT =====
+function renderReport() { drawRadar(); renderChapterRank(); renderSmartAdvice(); }
+
+function drawRadar() {
+  var canvas = document.getElementById("radarChart");
+  var ctx = canvas.getContext("2d");
+  var w=300,h=300,cx=150,cy=150,r=100;
+  ctx.clearRect(0,0,w,h);
+
+  var data = SUBJECTS.map(function(s){
+    var t=0, c=0;
+    QUESTIONS.forEach(function(q){
+      if(q.subject===s.id) {
+        var p = appData.progress[q.id] || {correct:0,wrong:0};
+        t += (p.correct||0)+(p.wrong||0); c += (p.correct||0);
+      }
+    });
+    return {name:s.name, icon:s.icon, rate:t>0?c/t:0};
+  });
+
+  var n = data.length;
+  if(Math.max.apply(null, data.map(function(d){ return d.rate; }))===0) {
+    ctx.fillStyle="#999"; ctx.font="16px sans-serif"; ctx.textAlign="center";
+    ctx.fillText("需要更多数据",cx,cy); return;
+  }
+
+  for(var lvl=1;lvl<=4;lvl++) {
+    ctx.beginPath();
+    for(var i=0;i<n;i++) {
+      var ang = -Math.PI/2 + i*2*Math.PI/n;
+      var x = cx + r*lvl/4 * Math.cos(ang), y = cy + r*lvl/4 * Math.sin(ang);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath(); ctx.strokeStyle="#DDD"; ctx.stroke();
+  }
+
+  for(var i=0;i<n;i++) {
+    var ang = -Math.PI/2 + i*2*Math.PI/n;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+r*Math.cos(ang),cy+r*Math.sin(ang));
+    ctx.strokeStyle="#DDD"; ctx.stroke();
+    ctx.fillStyle="#333"; ctx.font="14px sans-serif"; ctx.textAlign="center";
+    ctx.fillText(data[i].icon+" "+data[i].name, cx+(r+30)*Math.cos(ang), cy+(r+30)*Math.sin(ang)+5);
+  }
+
+  ctx.beginPath();
+  for(var i=0;i<n;i++) {
+    var ang = -Math.PI/2 + i*2*Math.PI/n;
+    var x = cx + r*data[i].rate * Math.cos(ang), y = cy + r*data[i].rate * Math.sin(ang);
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.closePath(); ctx.fillStyle="rgba(139,69,19,0.25)"; ctx.fill();
+  ctx.strokeStyle="#8B4513"; ctx.lineWidth=2; ctx.stroke();
+
+  for(var i=0;i<n;i++) {
+    var ang = -Math.PI/2 + i*2*Math.PI/n;
+    var x = cx + r*data[i].rate * Math.cos(ang), y = cy + r*data[i].rate * Math.sin(ang);
+    ctx.beginPath(); ctx.arc(x,y,5,0,2*Math.PI); ctx.fillStyle="#8B4513"; ctx.fill();
+  }
+
+  var lh = "";
+  data.forEach(function(d){ lh += '<div class="flex items-center gap-8"><span>'+d.icon+'</span><span class="fs-sm">'+d.name+': '+Math.round(d.rate*100)+'%</span></div>'; });
+  document.getElementById("radarLegend").innerHTML = lh;
+}
+
+function renderChapterRank() {
+  var chs = [];
+  for(var sid in CHAPTERS) {
+    CHAPTERS[sid].forEach(function(ch){
+      var t=0, c=0;
+      QUESTIONS.forEach(function(q){
+        if(q.subject==sid && q.chapter===ch) {
+          var p = appData.progress[q.id] || {correct:0,wrong:0};
+          t += (p.correct||0)+(p.wrong||0); c += (p.correct||0);
+        }
+      });
+      if(t>0) chs.push({sid:parseInt(sid), ch:ch, rate:Math.round(c/t*100), count:t});
+    });
+  }
+  chs.sort(function(a,b){ return a.rate-b.rate; });
+  var h = "";
+  chs.forEach(function(c){
+    var sub = SUBJECTS.find(function(s){ return s.id===c.sid; });
+    var chName = c.ch.split(" ")[1] || c.ch;
+    var color = c.rate<60?"red":c.rate<80?"yellow":"green";
+    h += '<div class="flex justify-between items-center" style="padding:4px 0"><span>'+sub.icon+' '+sub.name+'·'+chName+'</span><span class="tag tag-'+color+'">'+c.rate+'%</span></div>';
+  });
+  document.getElementById("chapterRank").innerHTML = h || '<div class="empty-state"><span class="empty-icon">📊</span>暂无数据</div>';
+}
+
+function renderSmartAdvice() {
+  var weak = [];
+  for(var sid in CHAPTERS) {
+    CHAPTERS[sid].forEach(function(ch){
+      var t=0, c=0;
+      QUESTIONS.forEach(function(q){
+        if(q.subject==sid && q.chapter===ch) {
+          var p = appData.progress[q.id] || {correct:0,wrong:0};
+          t += (p.correct||0)+(p.wrong||0); c += (p.correct||0);
+        }
+      });
+      if(t>=3) weak.push({sid:parseInt(sid), ch:ch, rate:c/t, count:t});
+    });
+  }
+  weak.sort(function(a,b){ return a.rate-b.rate; });
+  if(weak.length===0) return;
+  var top2 = weak.slice(0,2);
+  var sub1 = SUBJECTS.find(function(s){ return s.id===top2[0].sid; });
+  var ch1 = top2[0].ch.split(" ")[1] || top2[0].ch;
+  var txt = "💡 <span>明天优先复习 <b>"+sub1.name+" · "+ch1+"</b>";
+  if(top2[1]) {
+    var sub2 = SUBJECTS.find(function(s){ return s.id===top2[1].sid; });
+    txt += " 和 <b>"+sub2.name+" · "+(top2[1].ch.split(" ")[1]||top2[1].ch)+"</b>";
+  }
+  txt += "，目前正确率最低，投入时间性价比最高。</span>";
+  document.getElementById("smartAdvice").innerHTML = '<div class="speed-card">'+txt+'</div>';
+}
+
+// ===== SEARCH =====
+function renderSearch() {
+  var h = "";
+  SUBJECTS.forEach(function(s){ h += '<button class="tab" onclick="filterSearchResults('+s.id+')">'+s.icon+' '+s.name+'</button>'; });
+  document.getElementById("searchSubjects").innerHTML = h;
+}
+
+function globalSearch() {
+  var kw = document.getElementById("globalSearch").value.trim().toLowerCase();
+  if(!kw) { document.getElementById("searchResults").innerHTML = '<div class="empty-state"><span class="empty-icon">🔎</span>输入关键词开始搜索</div>'; return; }
+
+  var results = QUESTIONS.filter(function(q){
+    return q.question.indexOf(kw)>=0 || q.keywords.indexOf(kw)>=0 || (q.options||[]).some(function(o){ return o.indexOf(kw)>=0; }) || q.analysis.indexOf(kw)>=0;
+  });
+
+  if(results.length===0) {
+    document.getElementById("searchResults").innerHTML = '<div class="empty-state"><span class="empty-icon">🔍</span>没有找到相关内容</div>';
+    return;
+  }
+
+  if(appData.searchHistory.indexOf(kw)<0) {
+    appData.searchHistory.unshift(kw);
+    if(appData.searchHistory.length>10) appData.searchHistory.pop();
+    saveData(appData);
+  }
+
+  var html = "";
+  SUBJECTS.forEach(function(s){
+    var r = results.filter(function(q){ return q.subject===s.id; });
+    if(r.length===0) return;
+    html += '<div class="bold mt-12 mb-8">'+s.icon+' '+s.name+'（'+r.length+'条）</div>';
+    r.forEach(function(q){
+      html += '<div class="card" style="margin:8px 0;cursor:pointer" onclick="switchTab(1);startQuiz('+q.subject+',''+q.chapter.replace(/'/g,"\'")+'')"><div class="flex gap-8 mb-4"><span class="tag tag-blue">'+q.type+'型</span><span class="tag tag-new">'+(q.is2026New?"2026新增":(q.chapter.split(" ")[1]||q.chapter))+'</span></div><div class="fs-md bold">'+q.question+'</div><div class="mt-4" style="color:var(--accent)">答案：'+q.answer+'</div></div>';
+    });
+  });
+  document.getElementById("searchResults").innerHTML = html;
+}
+
+function filterSearchResults(sid) {}
+
+// ===== SETTINGS =====
+function renderSettings() {
+  var t=0, c=0;
+  for(var qid in appData.progress) {
+    var p = appData.progress[qid];
+    t += (p.correct||0)+(p.wrong||0); c += (p.correct||0);
+  }
+  document.getElementById("sTotal").textContent = t;
+  document.getElementById("sRate").textContent = t>0?Math.round(c/t*100)+"%":"0%";
+  document.getElementById("sStreak").textContent = appData.streak;
+  document.getElementById("sDuration").textContent = Math.round((appData.totalDuration||0)/60)+"h";
+  document.getElementById("dailyGoal").value = appData.settings.dailyGoal||50;
+  document.getElementById("studyPhase").value = appData.settings.phase||"basic";
+  document.getElementById("sceneMode").value = appData.settings.scene||"normal";
+  document.getElementById("fontSize").value = appData.settings.fontSize||22;
+  var size = new Blob([localStorage.getItem(STORAGE_KEY)||""]).size;
+  document.getElementById("cacheSize").textContent = "当前占用："+(size/1024).toFixed(1)+"KB";
+}
+
+function updatePhase() {
+  appData.settings.phase = document.getElementById("studyPhase").value;
+  saveData(appData); toast("备考阶段已切换");
+}
+
+function updateScene() {
+  var scene = document.getElementById("sceneMode").value;
+  appData.settings.scene = scene; saveData(appData);
+  var root = document.documentElement.style;
+  if(scene==="night") { root.setProperty("--bg","#1a1a2e"); root.setProperty("--card","#16213e"); root.setProperty("--text","#eee"); }
+  else if(scene==="elder") { root.setProperty("--font-xl","36px"); root.setProperty("--font-lg","28px"); root.setProperty("--font-md","22px"); }
+  else { root.setProperty("--bg","#F5F0E8"); root.setProperty("--card","#FFF8F0"); root.setProperty("--text","#3E2723"); root.setProperty("--font-xl","28px"); root.setProperty("--font-lg","22px"); root.setProperty("--font-md","18px"); }
+  toast("场景模式已切换");
+}
+
+function updateFontSize() {
+  var fs = parseInt(document.getElementById("fontSize").value);
+  appData.settings.fontSize = fs; saveData(appData);
+  document.documentElement.style.setProperty("--font-md",fs+"px");
+  document.documentElement.style.setProperty("--font-lg",(fs+4)+"px");
+  document.documentElement.style.setProperty("--font-xl",(fs+10)+"px");
+  toast("字体大小已调整");
+}
+
+function clearCache() {
+  if(confirm("确定要清理缓存吗？学习进度会保留。")) { appData._lastQuiz=null; saveData(appData); toast("缓存已清理"); }
+}
+
+function exportData() {
+  var blob = new Blob([JSON.stringify(appData,null,2)], {type:"application/json"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a"); a.href=url; a.download="执业药师_学习数据.json"; a.click();
+  URL.revokeObjectURL(url); toast("数据已导出");
+}
+
+// ===== INIT =====
+updateCountdown();
+setInterval(updateCountdown, 60000);
+renderHome();
+
+if("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("data:application/javascript," + encodeURIComponent("var C='yspx-v2';self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(['.'])}));self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==C}).map(function(x){return caches.delete(x)}))}));self.clients.claim()});self.addEventListener('fetch',function(e){e.respondWith(caches.match(e.request).then(function(r){return r||fetch(e.request).then(function(resp){var cl=resp.clone();caches.open(C).then(function(c){return c.put(e.request,cl)});return resp})}))});"));
+}
+
+var fs = appData.settings.fontSize||22;
+document.documentElement.style.setProperty("--font-md",fs+"px");
+document.documentElement.style.setProperty("--font-lg",(fs+4)+"px");
+document.documentElement.style.setProperty("--font-xl",(fs+10)+"px");
+</script>
+</body>
+</html>
