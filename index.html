@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -79,9 +79,15 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 .auth-toggle{text-align:center;margin-top:16px;font-size:var(--font-sm);color:#888}
 .auth-toggle span{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline}
 .auth-error{color:var(--red);font-size:var(--font-sm);text-align:center;margin-top:8px;min-height:20px}
+.auth-success{color:var(--green);font-size:var(--font-sm);text-align:center;margin-top:8px;min-height:20px}
+.auth-checkbox-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:var(--font-sm);color:#666}
+.auth-checkbox-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.auth-loading{display:inline-block;width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
 .user-badge{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:var(--font-sm)}
 .user-badge:hover{opacity:.8}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/umd/supabase.min.js"></script>
 </head>
 <body>
 <div class="header" id="headerTitle">国家执业药师职业资格考试（2026）</div>
@@ -92,11 +98,17 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="auth-page">
 <div class="auth-card">
 <div class="auth-title" id="authTitle">登录</div>
-<div class="auth-subtitle" id="authSubtitle">登录后数据将保存在您的账号下</div>
-<input class="auth-input" type="text" id="authUsername" placeholder="用户名" autocomplete="username">
+<div class="auth-subtitle" id="authSubtitle">使用邮箱登录，数据云端同步</div>
+<input class="auth-input" type="email" id="authEmail" placeholder="邮箱地址" autocomplete="email">
 <input class="auth-input" type="password" id="authPassword" placeholder="密码" autocomplete="current-password">
 <input class="auth-input" type="password" id="authPassword2" placeholder="确认密码" style="display:none" autocomplete="new-password">
+<input class="auth-input" type="text" id="authUsername" placeholder="设置用户名ID（登录后显示）" style="display:none" autocomplete="off">
+<div class="auth-checkbox-row" id="authCheckboxRow" style="display:flex">
+  <label style="display:flex;align-items:center;gap:8px;flex:1"><input type="checkbox" id="authRemember" checked> 记住密码</label>
+  <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="authAutoLogin" checked> 自动登录</label>
+</div>
 <div class="auth-error" id="authError"></div>
+<div class="auth-success" id="authSuccess"></div>
 <button class="btn btn-primary btn-block" id="authBtn" onclick="doAuth()">登 录</button>
 <div class="auth-toggle"><span id="authToggleText">没有账号？<span onclick="toggleAuthMode()">立即注册</span></span></div>
 </div></div></div>
@@ -260,8 +272,13 @@ var SUBJECTS = [{"id": 1, "name": "药一", "full": "药学专业知识（一）
 var CHAPTERS = {"1": ["第1章 药物化学基础", "第2章 药物制剂", "第3章 药物分析", "第4章 生物药剂学"], "2": ["第1章 神经系统药物", "第2章 心血管系统药物", "第3章 内分泌系统药物", "第4章 抗感染药物"], "3": ["第1章 药物治疗管理", "第2章 处方审核与调配", "第3章 用药教育与指导", "第4章 特殊人群用药"], "4": ["第1章 药品管理法", "第2章 药品注册管理", "第3章 GSP/GMP", "第4章 特殊管理药品"]};
 
 var STORAGE_BASE = "yspx_data_v2";
-function getStorageKey() { var user = localStorage.getItem("yspx_current_user"); return user ? STORAGE_BASE + "_" + user : STORAGE_BASE; }
-function getStorageKeyFor(user) { return STORAGE_BASE + "_" + user; }
+function getStorageKey() { return STORAGE_BASE + "_" + getUserId(); }
+function getUserId() { var u = localStorage.getItem("yspx_current_user"); return u || "anonymous"; }
+
+// Supabase client
+var SUPABASE_URL = "https://jbqhvlshxbefsgqjirnz.supabase.co";
+var SUPABASE_KEY = "sb_publishable__tl-I22y7045YJr7OJpGVQ_wZr0nbdp";
+var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function loadData() {
   try { return JSON.parse(localStorage.getItem(getStorageKey())) || getDefaultData(); }
@@ -874,70 +891,151 @@ function exportData() {
 }
 
 
-// ===== AUTH SYSTEM =====
-var AUTH_USERS_KEY = "yspx_users";
-
-async function hashPassword(password, username) {
-  var encoder = new TextEncoder();
-  var data = encoder.encode(password + "::yspx::" + username);
-  var hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  var hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
-}
+// ===== AUTH SYSTEM (Supabase) =====
 
 function getAuthMode() { return document.getElementById("authPassword2").style.display==="block" ? "register" : "login"; }
 
 function toggleAuthMode() {
   var isLogin = getAuthMode() === "login";
   document.getElementById("authTitle").textContent = isLogin ? "注册" : "登录";
-  document.getElementById("authSubtitle").textContent = isLogin ? "创建账号，开始学习之旅" : "登录后数据将保存在您的账号下";
+  document.getElementById("authSubtitle").textContent = isLogin ? "邮箱注册，验证后设置密码" : "使用邮箱登录，数据云端同步";
   document.getElementById("authPassword2").style.display = isLogin ? "block" : "none";
+  document.getElementById("authUsername").style.display = isLogin ? "block" : "none";
+  document.getElementById("authUsername").placeholder = isLogin ? "设置用户名ID（2-20个字符）" : "";
+  document.getElementById("authCheckboxRow").style.display = isLogin ? "none" : "flex";
   document.getElementById("authBtn").textContent = isLogin ? "注 册" : "登 录";
   document.getElementById("authToggleText").innerHTML = isLogin ? '已有账号？<span onclick="toggleAuthMode()">立即登录</span>' : '没有账号？<span onclick="toggleAuthMode()">立即注册</span>';
   document.getElementById("authError").textContent = "";
-  document.getElementById("authUsername").value = "";
+  document.getElementById("authSuccess").textContent = "";
+  document.getElementById("authEmail").value = "";
   document.getElementById("authPassword").value = "";
   document.getElementById("authPassword2").value = "";
+  document.getElementById("authUsername").value = "";
 }
 
-async function doAuth() {
-  var username = document.getElementById("authUsername").value.trim();
-  var password = document.getElementById("authPassword").value;
-  var mode = getAuthMode();
-  var errEl = document.getElementById("authError");
-  errEl.textContent = "";
-
-  if (!username || !password) { errEl.textContent = "请填写用户名和密码"; return; }
-  if (username.length < 2) { errEl.textContent = "用户名至少2个字符"; return; }
-  if (password.length < 4) { errEl.textContent = "密码至少4个字符"; return; }
-
-  if (mode === "register") {
-    var password2 = document.getElementById("authPassword2").value;
-    if (password !== password2) { errEl.textContent = "两次密码不一致"; return; }
-
-    var users = {};
-    try { users = JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {}; } catch(e) {}
-    if (users[username]) { errEl.textContent = "该用户名已被注册"; return; }
-
-    var hashed = await hashPassword(password, username);
-    users[username] = hashed;
-    localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
-    localStorage.setItem("yspx_current_user", username);
-    showApp();
+function setLoading(loading) {
+  var btn = document.getElementById("authBtn");
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="auth-loading"></span>处理中...';
   } else {
-    var users = {};
-    try { users = JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {}; } catch(e) {}
-    var hashed = await hashPassword(password, username);
-    if (!users[username] || users[username] !== hashed) { errEl.textContent = "用户名或密码错误"; return; }
-
-    localStorage.setItem("yspx_current_user", username);
-    showApp();
+    btn.disabled = false;
+    btn.textContent = getAuthMode() === "register" ? "注 册" : "登 录";
   }
 }
 
-function logout() {
-  if (confirm("确定要退出登录吗？")) {
+async function doAuth() {
+  var email = document.getElementById("authEmail").value.trim();
+  var password = document.getElementById("authPassword").value;
+  var mode = getAuthMode();
+  var errEl = document.getElementById("authError");
+  var sucEl = document.getElementById("authSuccess");
+  errEl.textContent = "";
+  sucEl.textContent = "";
+
+  if (!email || !password) { errEl.textContent = "请填写邮箱和密码"; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent = "请输入有效的邮箱地址"; return; }
+  if (password.length < 6) { errEl.textContent = "密码至少6个字符"; return; }
+
+  setLoading(true);
+
+  try {
+    if (mode === "register") {
+      var password2 = document.getElementById("authPassword2").value;
+      if (password !== password2) { errEl.textContent = "两次密码不一致"; setLoading(false); return; }
+      var username = document.getElementById("authUsername").value.trim();
+      if (!username) { errEl.textContent = "请设置用户名ID"; setLoading(false); return; }
+      if (username.length < 2 || username.length > 20) { errEl.textContent = "用户名ID需2-20个字符"; setLoading(false); return; }
+      if (!/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(username)) { errEl.textContent = "用户名只能包含中英文、数字和下划线"; setLoading(false); return; }
+
+      // Check username uniqueness
+      var { data: existing } = await supabase.from("profiles").select("username").eq("username", username).maybeSingle();
+      if (existing) { errEl.textContent = "该用户名已被占用"; setLoading(false); return; }
+
+      var { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: { data: { username: username } }
+      });
+
+      if (error) {
+        if (error.message.includes("already registered") || error.message.includes("already exists")) {
+          errEl.textContent = "该邮箱已注册，请直接登录";
+        } else {
+          errEl.textContent = error.message;
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Create profile in public.profiles table
+      if (data.user) {
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          username: username
+        }, { onConflict: "id" });
+      }
+
+      sucEl.textContent = "注册成功！请查看邮箱 " + email + " 中的验证邮件，点击链接激活账号后即可登录。";
+      document.getElementById("authPassword2").value = "";
+      document.getElementById("authUsername").value = "";
+      document.getElementById("authPassword").value = "";
+
+    } else {
+      // Login
+      var remember = document.getElementById("authRemember").checked;
+      var autoLogin = document.getElementById("authAutoLogin").checked;
+
+      // If user explicitly asks to remember, store credentials locally
+      if (remember) {
+        localStorage.setItem("yspx_remembered_email", email);
+        // Never store raw password; use a simple obfuscation (NOT secure, but better than plaintext)
+        // In production, use credential management API
+      } else {
+        localStorage.removeItem("yspx_remembered_email");
+      }
+
+      var { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        if (error.message.includes("Email not confirmed")) {
+          errEl.textContent = "邮箱尚未验证，请先点击验证邮件中的链接";
+        } else if (error.message.includes("Invalid login")) {
+          errEl.textContent = "邮箱或密码错误";
+        } else {
+          errEl.textContent = error.message;
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        localStorage.setItem("yspx_current_user", data.user.id);
+        // Store auto-login preference
+        if (autoLogin) {
+          localStorage.setItem("yspx_auto_login", "1");
+        } else {
+          localStorage.removeItem("yspx_auto_login");
+        }
+        showApp();
+        return;
+      }
+    }
+  } catch(e) {
+    errEl.textContent = "网络错误，请检查网络连接后重试";
+    console.error(e);
+  }
+  setLoading(false);
+}
+
+async function logout() {
+  if (confirm("确定要退出登录吗？（学习数据仍保留在云端）")) {
+    await supabase.auth.signOut();
     localStorage.removeItem("yspx_current_user");
+    localStorage.removeItem("yspx_auto_login");
     location.reload();
   }
 }
@@ -951,18 +1049,35 @@ function showApp() {
   initApp();
 }
 
-function checkAuth() {
-  var user = localStorage.getItem("yspx_current_user");
-  if (user) {
-    document.getElementById("page-auth").style.display = "none";
-    document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = ""; });
-    document.getElementById("page-home").classList.add("active");
-    document.getElementById("page-home").style.display = "";
-    document.querySelectorAll(".nav-item")[0].classList.add("active");
-    initApp();
-  } else {
-    document.getElementById("page-auth").style.display = "flex";
-    document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = "none"; });
+async function checkAuth() {
+  // Check for auto-login session
+  var { data } = await supabase.auth.getSession();
+  if (data.session) {
+    localStorage.setItem("yspx_current_user", data.session.user.id);
+    showApp();
+    return;
+  }
+
+  // Check if auto-login was previously enabled
+  var autoLogin = localStorage.getItem("yspx_auto_login");
+  if (autoLogin === "1") {
+    // Try to refresh session
+    var { data: refreshData } = await supabase.auth.refreshSession();
+    if (refreshData.session) {
+      localStorage.setItem("yspx_current_user", refreshData.session.user.id);
+      showApp();
+      return;
+    }
+  }
+
+  // Show auth page
+  document.getElementById("page-auth").style.display = "flex";
+  document.querySelectorAll(".page:not(#page-auth)").forEach(function(p){ p.style.display = "none"; });
+
+  // Restore remembered email
+  var rememberedEmail = localStorage.getItem("yspx_remembered_email");
+  if (rememberedEmail) {
+    document.getElementById("authEmail").value = rememberedEmail;
   }
 }
 
