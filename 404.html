@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>国家执业药师资格考试</title>
+<script>
+  // SPA fallback: redirect to root with original path as hash
+  var path = location.pathname.replace(/\/$/, '');
+  var repoName = '/national_licensed_pharmacist_qualification_examination';
+  if (path.indexOf(repoName) === 0) {
+    var route = path.substring(repoName.length) || '/';
+    location.replace(repoName + '/#' + route + location.search + location.hash);
+  } else {
+    location.replace('/');
+  }
+</script>
+</head>
+<body>正在跳转...</body>
+</html>
