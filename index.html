@@ -180,6 +180,10 @@ body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;backg
 <div class="page" id="page-study">
 <div class="tab-row" id="studySubjects"></div>
 <div class="search-box" style="position:sticky;top:54px"><div style="position:relative"><span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#999">🔍</span><input class="search-input" id="studySearch" placeholder="搜索章节或知识点..." oninput="filterChapters()"></div></div>
+<div class="flex gap-8" style="padding:8px 16px">
+<button class="btn btn-sm" id="bankAllBtn" onclick="setBankMode('all')" style="background:var(--accent);color:#fff">完整题库</button>
+<button class="btn btn-outline btn-sm" id="bankCoreBtn" onclick="setBankMode('core')">核心题库</button>
+</div>
 <div id="chapterList"></div>
 </div>
 
@@ -524,6 +528,7 @@ function updateCountdown() {
 var pages = ["page-home","page-study","page-wrong","page-exam","page-report","page-search","page-settings","page-profile","page-otp-reset","page-quiz","page-exam-running","page-exam-result"];
 var currentTab = 0;
 var currentSubject = 1;
+var bankMode = 'all';
 
 function switchTab(idx) {
   currentTab = idx;
@@ -784,23 +789,32 @@ function renderStudyTabs() {
 }
 
 function setStudySubject(sid) { currentSubject = sid; renderStudyTabs(); }
+function setBankMode(mode) {
+  bankMode = mode;
+  document.getElementById('bankAllBtn').style.background = mode === 'all' ? 'var(--accent)' : '';
+  document.getElementById('bankAllBtn').style.color = mode === 'all' ? '#fff' : '';
+  document.getElementById('bankCoreBtn').style.background = mode === 'core' ? 'var(--accent)' : '';
+  document.getElementById('bankCoreBtn').style.color = mode === 'core' ? '#fff' : '';
+  renderChapters();
+}
 
 function renderChapters(filter) {
   filter = filter || "";
   var chs = CHAPTERS[currentSubject] || [];
   var html = "";
   chs.forEach(function(ch){
+    var chapterQs = QUESTIONS.filter(function(q){ return q.subject===currentSubject && q.chapter===ch; });
+    if(bankMode === 'core') chapterQs = chapterQs.filter(function(q){ return q.core === true; });
+    var qCount = chapterQs.length;
+    if(qCount === 0) return;
     var cq=0, cc=0;
-    QUESTIONS.forEach(function(q){
-      if(q.subject===currentSubject && q.chapter===ch) {
-        var p = appData.progress[q.id] || {correct:0,wrong:0};
-        cq += (p.correct||0)+(p.wrong||0);
-        cc += (p.correct||0);
-      }
+    chapterQs.forEach(function(q){
+      var p = appData.progress[q.id] || {correct:0,wrong:0};
+      cq += (p.correct||0)+(p.wrong||0);
+      cc += (p.correct||0);
     });
     var rate = cq>0 ? Math.round(cc/cq*100) : 0;
     var color = cq===0 ? "" : rate<60 ? "red" : rate<80 ? "yellow" : "green";
-    var qCount = QUESTIONS.filter(function(q){ return q.subject===currentSubject && q.chapter===ch; }).length;
     if(filter && ch.indexOf(filter)<0) return;
     html += '<div class="chapter-row" onclick="startQuiz('+currentSubject+',\''+ch+'\')"><span class="tag'+(color?" tag-"+color:"")+'">'+(color?rate+"%":"NEW")+'</span><div class="chapter-info"><div class="chapter-name">'+ch+'</div><div class="chapter-meta">'+cq+'/'+qCount+'题</div></div><div class="progress-bar" style="width:60px"><div class="progress-fill" style="width:'+rate+'%;background:'+(color?'var(--'+color+')':'#CCC')+'"></div></div></div>';
   });
@@ -814,6 +828,7 @@ var quizState = null;
 
 function startQuiz(sid, chapter) {
   var chQs = QUESTIONS.filter(function(q){ return q.subject===sid && q.chapter===chapter; });
+  if(bankMode === 'core') chQs = chQs.filter(function(q){ return q.core === true; });
   if(chQs.length===0) { toast("该章节暂无题目"); return; }
   quizState = { subject: sid, chapter: chapter, questions: chQs, currentIdx: 0, answered: false };
   appData._lastQuiz = {subject:sid, chapter:chapter};
