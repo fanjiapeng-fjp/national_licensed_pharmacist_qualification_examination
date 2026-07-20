@@ -1,0 +1,59 @@
+<div class="page active" id="page-auth" style="display:flex">
+<div class="auth-page">
+<div class="auth-card">
+<div class="auth-title" id="authTitle">登录</div>
+<div class="auth-subtitle" id="authSubtitle">使用邮箱登录，数据云端同步</div>
+
+<!-- Normal auth form -->
+<div id="authNormal">
+<input class="auth-input" type="email" id="authEmail" placeholder="邮箱地址" autocomplete="email" oninput="checkEmailExists()">
+<div class="auth-hint" id="authEmailHint"></div>
+<input class="auth-input" type="password" id="authPassword" placeholder="密码" autocomplete="current-password">
+<input class="auth-input" type="password" id="authPassword2" placeholder="确认密码" style="display:none" autocomplete="new-password">
+<input class="auth-input" type="text" id="authUsername" placeholder="用户名（2-20个字符）" style="display:none" autocomplete="off">
+<div class="auth-checkbox-row" id="authCheckboxRow" style="display:flex">
+  <label style="display:flex;align-items:center;gap:8px;flex:1"><input type="checkbox" id="authRemember" checked> 记住密码</label>
+  <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="authAutoLogin" checked> 自动登录</label>
+</div>
+<div class="auth-error" id="authError"></div>
+<div class="auth-success" id="authSuccess"></div>
+<button class="btn btn-primary btn-block" id="authBtn" onclick="doAuth()">登 录</button>
+<div class="auth-toggle" id="authToggleText" style="margin-bottom:4px">没有账号？<span onclick="toggleAuthMode()">立即注册</span></div>
+<div class="auth-toggle" style="margin-bottom:4px;cursor:pointer" onclick="showForgotPassword()"><span>忘记密码？</span></div>
+<div class="auth-toggle" id="authMoreLogin" style="display:block">
+  <span onclick="toggleMoreLogin()" style="color:#888;text-decoration:none">更多登录方式 ▸</span>
+  <div id="authMoreLoginList" style="display:none;margin-top:8px">
+    <span onclick="showOtpLogin()" style="color:var(--accent);cursor:pointer;text-decoration:underline">邮箱验证码登录</span>
+  </div>
+</div>
+</div>
+
+<!-- OTP login form -->
+<div id="authOtp" style="display:none">
+<input class="auth-input" type="email" id="authOtpEmail" placeholder="邮箱地址" autocomplete="email">
+<div id="authOtpCodeRow" style="display:none">
+  <input class="auth-input" type="text" id="authOtpCode" placeholder="6位验证码" maxlength="6" autocomplete="one-time-code" inputmode="numeric">
+</div>
+<div class="auth-error" id="authOtpError"></div>
+<div class="auth-success" id="authOtpSuccess"></div>
+<button class="btn btn-primary btn-block" id="authOtpBtn" onclick="doOtpLogin()">发送验证码</button>
+<div class="auth-toggle"><span onclick="backToNormalAuth()" style="cursor:pointer;text-decoration:underline">← 返回密码登录</span></div>
+</div>
+
+<!-- Forgot password form -->
+<div id="authForgot" style="display:none">
+<div class="auth-subtitle" style="font-size:var(--font-sm)">输入邮箱，我们将发送重置密码链接</div>
+<input class="auth-input" type="email" id="authForgotEmail" placeholder="邮箱地址" autocomplete="email">
+<div id="authForgotNewPwd" style="display:none">
+  <input class="auth-input" type="password" id="authForgotPassword" placeholder="新密码（至少6位）" autocomplete="new-password">
+  <input class="auth-input" type="password" id="authForgotPassword2" placeholder="确认新密码">
+</div>
+<div class="auth-error" id="authForgotError"></div>
+<div class="auth-success" id="authForgotSuccess"></div>
+<button class="btn btn-primary btn-block" id="authForgotBtn" onclick="doForgotPassword()">发送重置邮件</button>
+<div class="auth-toggle"><span onclick="backToNormalAuth()" style="cursor:pointer;text-decoration:underline">← 返回登录</span></div>
+</div>
+
+</div></div></div>
+
+<div
